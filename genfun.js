@@ -15,6 +15,12 @@ var Genfun = (function() {
     };
 
     Genfun.prototype.apply = function(newthis, args) {
+        // HACK
+        // arguments aren't actually Arrays.
+        // Hack taken from
+        // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/arguments
+        args = Array.prototype.slice.call(args);
+        // ENDHACK
         var discovered_methods = [];
         var applicable_methods = [];
         var genfun = this;
@@ -33,14 +39,11 @@ var Genfun = (function() {
                 }
             });
         };
-        var i, arg;
-        var length = args.length;
-        for (i = 0; i < length; i++) {
-            arg = args[i];
+        args.forEach(function(arg, index) {
             get_precedence_list(arg).forEach(function(obj, pos) {
-                find_and_rank_roles(obj, pos, i);
+                find_and_rank_roles(obj, pos, index);
             });
-        }
+        });
         applicable_methods.sort(function(a, b) {
             return a.score() < b.score();
         });
