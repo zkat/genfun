@@ -4,6 +4,13 @@ var Genfun = (function() {
      *
      * Creates generic functions capable of multiple dispatch across
      * several arguments.
+     *
+     * TODO:
+     *
+     * * More portability (currently rely on 1.8.0+ features
+     * * Handle non-object primitives
+     * * Test effects of varying-length arglists
+     *
      */
     function Genfun() {
         var genfun = this;
