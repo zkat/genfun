@@ -32,9 +32,9 @@ frobnicate(new Number(1), new String("foo"));
 
 `genfun` is a library that provides multimethod/generic function
 capabilities in a prototype-friendly way. Inspired by
-[Slate][http://slatelanguage.org/],
-[CLOS][http://en.wikipedia.org/wiki/CLOS] and
-[Sheeple][http://github.com/zkat/sheeple].
+[Slate](http://slatelanguage.org/),
+[CLOS](http://en.wikipedia.org/wiki/CLOS) and
+[Sheeple](http://github.com/zkat/sheeple).
 
 ### Notes
 
