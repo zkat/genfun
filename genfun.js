@@ -85,7 +85,7 @@ var Genfun = (function() {
         this.func = func;
         this._rank = participants.map(function() null);
         var method = this;
-        participants.forEach(function(participant, i) {
+        this.participants.forEach(function(participant, i) {
             if (!participant.__roles__) participant.__roles__ = [];
             participant.__roles__.push(new Role(method, i));
         });
