@@ -177,13 +177,13 @@ var Genfun = (function() {
                 console.log("Dispatch fell through to the default method: ", obj1, obj2);
             });
 
-        frobnicate(new String("foo"), new Number(1));
-        frobnicate(1, "foo");
-        frobnicate(1, 1);
-        frobnicate(1);
-        frobnicate("str");
-        frobnicate(true);
-        frobnicate();
+        frobnicate(new String("foo"), new Number(1)); // Got a string and a number
+        frobnicate(1, "foo"); // Got a number and a string
+        frobnicate(1, 1); // One number
+        frobnicate(1); // One number
+        frobnicate("str"); // One string
+        frobnicate(true); // Dispatch fell through
+        frobnicate(); // Dispatch fell through
     };
 
     return Genfun;
