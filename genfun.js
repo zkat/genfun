@@ -133,7 +133,7 @@ var Genfun = (function() {
     };
 
     Method.prototype.score = function() {
-        this._rank.reduce(function(a, b) { return a + b; }, 0);
+        return this._rank.reduce(function(a, b) { return a + b; }, 0);
     };
 
     function Role(method, position) {
