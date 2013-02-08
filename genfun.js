@@ -30,7 +30,8 @@ var Genfun = (function() {
         var applicable_methods = [];
         var genfun = this;
         function find_and_rank_roles(object, hposition, index) {
-            (object.__roles__ || []).forEach(function(role) {
+            var roles = object.hasOwnProperty("__roles__")?object.__roles__:[];
+            roles.forEach(function(role) {
                 if (role.method.genfun === genfun && index === role.position) {
                     if (discovered_methods.indexOf(role.method) < 0) {
                         role.method.clear_rank();
@@ -84,7 +85,10 @@ var Genfun = (function() {
         this._rank = participants.map(function() null);
         var method = this;
         this.participants.forEach(function(participant, i) {
-            if (!participant.__roles__) participant.__roles__ = [];
+            if (!participant.hasOwnProperty("__roles__")) {
+                Object.defineProperty(
+                    participant, "__roles__", {value: [], enumerable: false});
+            };
             participant.__roles__.push(new Role(method, i));
         });
     };
