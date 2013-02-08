@@ -146,27 +146,44 @@ var Genfun = (function() {
          * Test
          */
         var frobnicate = new Genfun();
+
+        frobnicate.addMethod(
+            [Number.prototype],
+            function(num) {
+                console.log("One number: ", num);
+            });
+
+        frobnicate.addMethod(
+            [String.prototype],
+            function(str) {
+                console.log("One string: ", str);
+            });
+
         frobnicate.addMethod(
             [String.prototype, Number.prototype],
             function(string, number) {
-                console.log("Got a string and a number");
+                console.log("Got a string and a number: ", string, number);
             });
 
         frobnicate.addMethod(
             [Number.prototype, String.prototype],
             function(number, string) {
-                console.log("Got a number and a string");
+                console.log("Got a number and a string: ", number, string);
             });
 
         frobnicate.addMethod(
             [Object.prototype, Object.prototype],
             function(obj1, obj2) {
-                console.log("Dispatch fell through to the default method.");
+                console.log("Dispatch fell through to the default method: ", obj1, obj2);
             });
 
         frobnicate(new String("foo"), new Number(1));
         frobnicate(1, "foo");
         frobnicate(1, 1);
+        frobnicate(1);
+        frobnicate("str");
+        frobnicate(true);
+        frobnicate();
     };
 
     return Genfun;
