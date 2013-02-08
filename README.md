@@ -7,22 +7,28 @@
 
 var frobnicate = new Genfun();
 
-Genfun.addMethod(
-    frobnicate,
+frobnicate.addMethod(
     [String.prototype, Number.prototype],
     function(string, number) {
         console.log("Got a string and a number");
     });
 
-Genfun.addMethod(
-    frobnicate,
+frobnicate.addMethod(
     [Number.prototype, String.prototype],
     function(number, string) {
         console.log("Got a number and a string");
     });
-    
-frobnicate(new String("foo"), new Number(1));
-frobnicate(new Number(1), new String("foo"));
+
+/* 'Default' methods can be defined by dispatching on Object.prototype */
+frobnicate.addMethod(
+    [Object.prototype, Object.prototype],
+    function(obj1, obj2) {
+        console.log("Dispatch fell through to the default method.");
+    });
+
+frobnicate(new String("foo"), new Number(1)); // => Got a string and a number
+frobnicate(1, "foo"); // => Got a number and a string
+frobnicate(1, 1); // => Dispatch fell through to the default method
 
 ```
 
