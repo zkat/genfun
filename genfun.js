@@ -8,9 +8,12 @@ var Genfun = (function() {
      * TODO:
      *
      * * More portability (currently rely on 1.8.0+ features
-     * * Handle non-object primitives
      * * Test effects of varying-length arglists
-     *
+     * * Try out alternative syntax for addMethod (not really exciting, but
+     *   it might be fun to try it out)
+     * * Make sure 'this' is bound to the correct object when calling
+     *   genfuns and methods.
+     * * Method redefinition: overwrite methods with identical specs
      */
     function Genfun() {
         var genfun = this;
