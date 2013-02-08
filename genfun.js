@@ -24,6 +24,28 @@ var Genfun = (function() {
         return fun;
     };
 
+    /*
+     * Returns a useful dispatch object for value using a process similar to
+     * the ToObject operation specified in http://es5.github.com/#x9.9
+     *
+     * It differs in that new Object(value) is returned when for undefined
+     * and null values instead of throwing an error.
+     */
+    Genfun.prototype.dispatchable_object = function(value) {
+        switch (typeof value) {
+        case "object":
+            return value;
+        case "boolean":
+            return new Boolean(value);
+        case "number":
+            return new Number(value);
+        case "string":
+            return new String(value);
+        default:
+            return new Object(value);
+        }
+    };
+
     Genfun.prototype.apply = function(newthis, args) {
         args = [].slice.call(args);
         var discovered_methods = [];
@@ -46,9 +68,10 @@ var Genfun = (function() {
             });
         };
         args.forEach(function(arg, index) {
-            get_precedence_list(arg).forEach(function(obj, pos) {
-                find_and_rank_roles(obj, pos, index);
-            });
+            get_precedence_list(genfun.dispatchable_object(arg))
+                .forEach(function(obj, pos) {
+                    find_and_rank_roles(obj, pos, index);
+                });
         });
         applicable_methods.sort(function(a, b) {
             return a.score() < b.score();
@@ -66,14 +89,10 @@ var Genfun = (function() {
 
     function get_precedence_list(obj) {
         var precedence_list = [];
-        if (obj instanceof Object) {
-            var next_obj = obj;
-            while(next_obj) {
-                precedence_list.push(next_obj);
-                next_obj = Object.getPrototypeOf(next_obj);
-            }
-        } else {
-            // TODO - compensate for non-objects somehow.
+        var next_obj = obj;
+        while(next_obj) {
+            precedence_list.push(next_obj);
+            next_obj = Object.getPrototypeOf(next_obj);
         }
         return precedence_list;
     };
