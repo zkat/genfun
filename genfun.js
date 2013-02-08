@@ -166,6 +166,7 @@ var Genfun = (function() {
 
         frobnicate(new String("foo"), new Number(1));
         frobnicate(1, "foo");
+        frobnicate(1, 1);
     };
 
     return Genfun;
