@@ -1,7 +1,7 @@
 # Quickstart
 
-`genfun` is
-[hosted at Github](http://github.com/zkat/genfun-js).
+`genfun.js` is
+[hosted at Github](http://github.com/zkat/genfun.js).
 
 ```javascript
 
@@ -36,15 +36,18 @@ frobnicate(1, 1); // => Dispatch fell through to the default method
 
 ### Prototype-friendly multiple dispatch
 
-`genfun` is a library that provides multimethod/generic function
+`genfun.js` is a library that provides multimethod/generic function
 capabilities in a prototype-friendly way. Inspired by
 [Slate](http://slatelanguage.org/),
 [CLOS](http://en.wikipedia.org/wiki/CLOS) and
-[Sheeple](http://github.com/zkat/sheeple).
+[Sheeple](http://github.com/zkat/sheeple). In this case,
+'prototype-friendly' means that it doesn't keep references from methods to
+objects, so they will be garbage collected normally even if a method has
+been directly defined on them.
 
 ### Notes
 
-Right now, genfun is mainly a proof of concept and porting of old Sheeple
+Right now, `genfun.js` is mainly a proof of concept and porting of old Sheeple
 code. No real optimization has been done on dispatch, so you can expect it
 to crawl under any real strain. Once optimized, the system would ideally be
 just as fast as a singly-dispatched system when only one argument is
