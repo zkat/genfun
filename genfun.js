@@ -18,16 +18,14 @@ var Genfun = (function() {
             genfun.apply(this, arguments);
         };
         fun.genfun = genfun;
+        fun.addMethod = function() {
+            genfun.addMethod.apply(genfun, arguments);
+        };
         return fun;
     };
 
     Genfun.prototype.apply = function(newthis, args) {
-        // HACK
-        // arguments aren't actually Arrays.
-        // Hack taken from
-        // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Functions_and_function_scope/arguments
-        args = Array.prototype.slice.call(args);
-        // ENDHACK
+        args = [].slice.call(args);
         var discovered_methods = [];
         var applicable_methods = [];
         var genfun = this;
