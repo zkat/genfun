@@ -103,12 +103,15 @@ var Genfun = (function() {
         this.func = func;
         this._rank = participants.map(function() null);
         var method = this;
+        // TODO - check if there's a method for this genfun with matching
+        //        participants defined, and overwrite it instead of
+        //        unshifting.
         this.participants.forEach(function(participant, i) {
             if (!participant.hasOwnProperty("__roles__")) {
                 Object.defineProperty(
                     participant, "__roles__", {value: [], enumerable: false});
             };
-            participant.__roles__.push(new Role(method, i));
+            participant.__roles__.unshift(new Role(method, i));
         });
     };
 
