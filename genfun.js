@@ -59,8 +59,8 @@ var Genfun = (function() {
         }
     };
 
-    Genfun.addMethod = function(genfun, participants, func) {
-        return new Method(genfun.genfun, participants, func);
+    Genfun.prototype.addMethod = function(participants, func) {
+        return new Method(this, participants, func);
     };
 
     function get_precedence_list(obj) {
@@ -116,15 +116,13 @@ var Genfun = (function() {
      * Test
      */
     var frobnicate = new Genfun();
-    Genfun.addMethod(
-        frobnicate,
+    frobnicate.addMethod(
         [String.prototype, Number.prototype],
         function(string, number) {
             console.log("Got a string and a number");
         });
 
-    Genfun.addMethod(
-        frobnicate,
+    frobnicate.addMethod(
         [Number.prototype, String.prototype],
         function(number, string) {
             console.log("Got a number and a string");
