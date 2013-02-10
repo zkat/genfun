@@ -7,13 +7,24 @@ var Genfun = (function() {
      *
      * TODO:
      *
-     * * More portability (currently rely on 1.8.0+ features
-     * * Test effects of varying-length arglists
+     * * More portability (currently rely on 1.8.0+ features)
+     *
      * * Try out alternative syntax for addMethod (not really exciting, but
      *   it might be fun to try it out)
-     * * Make sure 'this' is bound to the correct object when calling
-     *   genfuns and methods.
+     *
      * * Method redefinition: overwrite methods with identical specs
+     *
+     * Optimization:
+     *
+     * * Use partial dispatch trick
+     *
+     * * Use integers/bitfields for rank vectors instead of arrays
+     *
+     * * Don't bother adding roles to Object.prototype, except for position 0
+     *
+     * * Caching
+     *
+     * * See if v8/*monkey/etc provide any implementation-specific access to maps.
      */
     function Genfun() {
         var genfun = this;
@@ -31,8 +42,6 @@ var Genfun = (function() {
      * Returns a useful dispatch object for value using a process similar to
      * the ToObject operation specified in http://es5.github.com/#x9.9
      *
-     * It differs in that new Object(value) is returned when for undefined
-     * and null values instead of throwing an error.
      */
     Genfun.prototype.dispatchable_object = function(value) {
         switch (typeof value) {
@@ -52,9 +61,8 @@ var Genfun = (function() {
     Genfun.prototype.apply = function(newthis, args) {
         args = [].slice.call(args);
         var discovered_methods = [];
-        var applicable_methods = [];
         var genfun = this;
-        function find_and_rank_roles(object, hposition, index) {
+        function find_and_rank_roles(object, hierarchy_position, index) {
             var roles = object.hasOwnProperty("__roles__")?object.__roles__:[];
             roles.forEach(function(role) {
                 if (role.method.genfun === genfun && index === role.position) {
@@ -62,23 +70,31 @@ var Genfun = (function() {
                         role.method.clear_rank();
                         discovered_methods.push(role.method);
                     }
-                    role.method.set_rank_hposition(index, hposition);
-                    if (role.method.is_fully_specified() &&
-                        applicable_methods.indexOf(role.method) < 0) {
-                        applicable_methods.push(role.method);
-                    }
+                    role.method.set_rank_hierarchy_position(index, hierarchy_position);
                 }
             });
+            if (object === Object.prototype) {
+                discovered_methods.forEach(function(method) {
+                    if (method.participants.length <= index) {
+                        method.set_rank_hierarchy_position(index, hierarchy_position);
+                    }
+                });
+            }
         };
-        args.forEach(function(arg, index) {
+        (args.length?args:[Object.prototype]).forEach(function(arg, index) {
             get_precedence_list(genfun.dispatchable_object(arg))
-                .forEach(function(obj, pos) {
-                    find_and_rank_roles(obj, pos, index);
+                .forEach(function(obj, hierarchy_position) {
+                    find_and_rank_roles(obj, hierarchy_position, index);
                 });
         });
-        applicable_methods.sort(function(a, b) {
-            return a.score() < b.score();
+        var applicable_methods = discovered_methods.filter(function(method) {
+            return ((args.length||1) === method._rank.length &&
+                    method.is_fully_specified());
         });
+        applicable_methods.sort(function(a, b) {
+            return a.score() > b.score();
+        });
+
         if (applicable_methods.length) {
             applicable_methods[0].func.apply(newthis, args);
         } else {
@@ -104,35 +120,41 @@ var Genfun = (function() {
         this.genfun = genfun;
         this.participants = participants;
         this.func = func;
-        this._rank = participants.map(function() null);
+        this._rank = [];
         var method = this;
         // TODO - check if there's a method for this genfun with matching
         //        participants defined, and overwrite it instead of
         //        unshifting.
-        this.participants.forEach(function(participant, i) {
+        var tmp_participants = this.participants.length?this.participants:[Object.prototype];
+        for (var i = 0, participant; i < tmp_participants.length; i++) {
+            participant = tmp_participants.hasOwnProperty(i)?tmp_participants[i]:Object.prototype;
             if (!participant.hasOwnProperty("__roles__")) {
                 Object.defineProperty(
                     participant, "__roles__", {value: [], enumerable: false});
             };
             participant.__roles__.unshift(new Role(method, i));
-        });
+        }
     };
 
-    Method.prototype.is_fully_specified = function() {
-        return this._rank.every(function(hposition) { return hposition; });
-    };
-
-    Method.prototype.set_rank_hposition = function(index, hposition) {
-        this._rank[index] = hposition;
+    Method.prototype.set_rank_hierarchy_position = function(index, hierarchy_position) {
+        this._rank[index] = hierarchy_position;
     };
 
     Method.prototype.clear_rank = function() {
-        this._rank.forEach(function(_, i, arr) {
-            arr[i] = null;
-        });
+        this._rank = [];
+    };
+
+    Method.prototype.is_fully_specified = function() {
+        for (var i = 0; i < this.participants.length; i++) {
+            if (!this._rank.hasOwnProperty(i)) {
+                return false;
+            }
+        }
+        return true;
     };
 
     Method.prototype.score = function() {
+        // TODO - this makes all items in the list equal
         return this._rank.reduce(function(a, b) { return a + b; }, 0);
     };
 
@@ -172,9 +194,15 @@ var Genfun = (function() {
             });
 
         frobnicate.addMethod(
-            [Object.prototype, Object.prototype],
-            function(obj1, obj2) {
-                console.log("Dispatch fell through to the default method: ", obj1, obj2);
+            [],
+            function() {
+                console.log("Dispatch fell through to the default method: ", arguments);
+            });
+
+        frobnicate.addMethod(
+            [Number.prototype, , String.prototype],
+            function(num, anything, string) {
+                console.log("A number, anything, and then a string.");
             });
 
         frobnicate(new String("foo"), new Number(1)); // Got a string and a number
@@ -184,6 +212,7 @@ var Genfun = (function() {
         frobnicate("str"); // One string
         frobnicate(true); // Dispatch fell through
         frobnicate(); // Dispatch fell through
+        frobnicate(1, true, "foo"); // A number, anything, and then a string.
     };
 
     return Genfun;
