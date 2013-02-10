@@ -19,16 +19,35 @@ frobnicate.addMethod(
         console.log("Got a number and a string");
     });
 
-/* 'Default' methods can be defined by dispatching on Object.prototype */
+/* Genfun can handle multiple-arity dispatch. Any extra arguments will be
+   ranked as if the position had been specialized on Object.prototype */
 frobnicate.addMethod(
-    [Object.prototype, Object.prototype],
-    function(obj1, obj2) {
+    [Number.prototype], // Equivalent to [Number.prototype, Object.prototype]
+            // when called with two arguments.
+    function(number) {
+        console.log("Got a single number.");
+    });
+
+/* multi-arity dispatch can be exploited to define a 'default' methods */
+frobnicate.addMethod(
+    [],
+    function() {
         console.log("Dispatch fell through to the default method.");
+    });
+
+/* Empty positions in the dispatch spec will be treated as Object.prototype */
+frobnicate.addMethod(
+    [Number.prototype, , Boolean.prototype],
+    function(a, b, c) {
+        console.log("Got a number, ", b, ", and a boolean");
     });
 
 frobnicate(new String("foo"), new Number(1)); // => Got a string and a number
 frobnicate(1, "foo"); // => Got a number and a string
-frobnicate(1, 1); // => Dispatch fell through to the default method
+frobnicate(1); // => Got a single number
+frobnicate(1, 1); // => Got a single number
+frobnicate(true); // => Dispatch fell through
+frobnicate(1, [], true); // => Got a number, [], and a boolean
 
 ```
 
