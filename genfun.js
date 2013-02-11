@@ -1,4 +1,4 @@
-var Genfun = (function() {
+(function(window) {
     /*
      * Genfun
      *
@@ -12,7 +12,7 @@ var Genfun = (function() {
      * * Try out alternative syntax for addMethod (not really exciting, but
      *   it might be fun to try it out)
      *
-     * * Method redefinition: overwrite methods with identical specs
+     * * Method combination (or at least next_method())
      *
      * Optimization:
      *
@@ -59,6 +59,15 @@ var Genfun = (function() {
     };
 
     Genfun.prototype.apply = function(newthis, args) {
+        var applicable_methods = this.compute_applicable_methods(args);
+        if (applicable_methods.length) {
+            applicable_methods[0].func.apply(newthis, args);
+        } else {
+            throw Error("No applicable methods");
+        }
+    };
+
+    Genfun.prototype.compute_applicable_methods = function(args) {
         args = [].slice.call(args);
         var discovered_methods = [];
         var genfun = this;
@@ -73,6 +82,9 @@ var Genfun = (function() {
                     role.method.set_rank_hierarchy_position(index, hierarchy_position);
                 }
             });
+            // When a discovered method would receive more arguments than
+            // were specialized, we pretend all extra arguments have a role
+            // on Object.prototype.
             if (object === Object.prototype) {
                 discovered_methods.forEach(function(method) {
                     if (method.participants.length <= index) {
@@ -81,6 +93,9 @@ var Genfun = (function() {
                 });
             }
         };
+        // We dispatch 'default' methods if the argument list was empty by
+        // pretending an Object.prototype object was passed in, but only
+        // for dispatch.
         (args.length?args:[Object.prototype]).forEach(function(arg, index) {
             get_precedence_list(genfun.dispatchable_object(arg))
                 .forEach(function(obj, hierarchy_position) {
@@ -88,24 +103,25 @@ var Genfun = (function() {
                 });
         });
         var applicable_methods = discovered_methods.filter(function(method) {
+            // This ||1 works with the above hack, for 0-arity calls.
             return ((args.length||1) === method._rank.length &&
                     method.is_fully_specified());
         });
         applicable_methods.sort(function(a, b) {
             return a.score() > b.score();
         });
-
-        if (applicable_methods.length) {
-            applicable_methods[0].func.apply(newthis, args);
-        } else {
-            throw Error("No applicable methods");
-        }
+        return applicable_methods;
     };
 
     Genfun.prototype.addMethod = function(participants, func) {
         return new Method(this, participants, func);
     };
 
+    /*
+     * Helper function for getting an array representing the entire
+     * inheritance/precedence chain for an object by navigating its
+     * prototype pointers.
+     */
     function get_precedence_list(obj) {
         var precedence_list = [];
         var next_obj = obj;
@@ -116,22 +132,47 @@ var Genfun = (function() {
         return precedence_list;
     };
 
+    /*
+     * Method
+     *
+     * Methods are added, conceptually, to Genfuns, not to objects
+     * themselves, although the Genfun object does not have any pointers to
+     * method objects.
+     *
+     * The _rank vector is an internal datastructure used during dispatch
+     * to figure out whether a method is applicable, and if so, how to
+     * order multiple discovered methods.
+     *
+     * Right now, the score method on Method does not take into account any
+     * ordering, and all arguments to a method are ranked equally for the
+     * sake of ordering.
+     *
+     * TODO:
+     *
+     * * Method redefinition: overwrite methods with identical specs
+     *
+     * * removeMethod(): Remove a method exactly matching a given spec
+     */
     function Method(genfun, participants, func) {
         this.genfun = genfun;
         this.participants = participants;
         this.func = func;
         this._rank = [];
         var method = this;
-        // TODO - check if there's a method for this genfun with matching
-        //        participants defined, and overwrite it instead of
-        //        unshifting.
         var tmp_participants = this.participants.length?this.participants:[Object.prototype];
         for (var i = 0, participant; i < tmp_participants.length; i++) {
-            participant = tmp_participants.hasOwnProperty(i)?tmp_participants[i]:Object.prototype;
+            participant = tmp_participants.hasOwnProperty(i)?
+                tmp_participants[i]:
+                Object.prototype;
+            // __roles__ was deemed Good Enough™ by the committee for
+            // arbitrary property definition
             if (!participant.hasOwnProperty("__roles__")) {
                 Object.defineProperty(
                     participant, "__roles__", {value: [], enumerable: false});
             };
+            // HACK - no method replacement now, so we just shove it in a
+            // place where it'll always show up first. This would probably
+            // seriously break method combination if we had it.
             participant.__roles__.unshift(new Role(method, i));
         }
     };
@@ -158,6 +199,14 @@ var Genfun = (function() {
         return this._rank.reduce(function(a, b) { return a + b; }, 0);
     };
 
+    /*
+     * Role
+     *
+     * A Role encapsulates a particular object's 'role' in a method's
+     * dispatch. They are added directly to the participants for a method,
+     * and thus do not prevent the objects a method was defined on from
+     * being garbage collected.
+     */
     function Role(method, position) {
         this.method = method;
         this.position = position;
@@ -215,5 +264,9 @@ var Genfun = (function() {
         frobnicate(1, true, "foo"); // A number, anything, and then a string.
     };
 
-    return Genfun;
-})();
+    /*
+     * Export
+     */
+    window.Genfun = Genfun;
+
+})(this);
