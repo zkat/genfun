@@ -3,7 +3,7 @@
 `genfun.js` is
 [hosted at Github](http://github.com/zkat/genfun.js). `genfun.js` is a
 public domain work, dedicated using
-[CC0 1.0](https://creativecommons.org/licenses/zero/1.0/legalcode). Feel
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Feel
 free to do whatever you want with it.
 
 ```javascript
