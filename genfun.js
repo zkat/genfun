@@ -266,7 +266,19 @@
 
     /*
      * Export
+     *
+     * Snippet for AMD support taken partially from lodash
      */
+
     window.Genfun = Genfun;
+
+    if (typeof define == "function" &&
+        typeof define.amd == "object" &&
+        define.amd) {
+        define(function() {
+            return Genfun;
+        });
+    }
+
 
 })(this);
