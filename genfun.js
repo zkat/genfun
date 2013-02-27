@@ -39,37 +39,24 @@
     function Genfun() {
         var genfun = this;
         var fun = function() {
-            genfun.apply(this, arguments);
+            apply_genfun(genfun, this, arguments);
         };
         fun.genfun = genfun;
-        fun.addMethod = function() {
-            genfun.addMethod.apply(genfun, arguments);
-        };
+        fun.addMethod = function(participants, func) { add_method(genfun, participants, func); };
+        fun.removeMethod = function(participants) { remove_method(genfun, participants); };
         return fun;
     };
 
-    /*
-     * Returns a useful dispatch object for value using a process similar to
-     * the ToObject operation specified in http://es5.github.com/#x9.9
-     *
-     */
-    Genfun.prototype.dispatchable_object = function(value) {
-        switch (typeof value) {
-        case "object":
-            return value;
-        case "boolean":
-            return new Boolean(value);
-        case "number":
-            return new Number(value);
-        case "string":
-            return new String(value);
-        default:
-            return new Object(value);
-        }
+    function add_method(genfun, participants, func) {
+        return new Method(genfun, participants, func);
     };
 
-    Genfun.prototype.apply = function(newthis, args) {
-        var applicable_methods = this.compute_applicable_methods(args);
+    function remove_method(genfun, participants) {
+        throw Error("not yet implemented");
+    };
+
+    function apply_genfun(genfun, newthis, args) {
+        var applicable_methods = compute_applicable_methods(genfun, args);
         if (applicable_methods.length) {
             applicable_methods[0].func.apply(newthis, args);
         } else {
@@ -77,19 +64,18 @@
         }
     };
 
-    Genfun.prototype.compute_applicable_methods = function(args) {
+    function compute_applicable_methods(genfun, args) {
         args = [].slice.call(args);
         var discovered_methods = [];
-        var genfun = this;
         function find_and_rank_roles(object, hierarchy_position, index) {
             var roles = object.hasOwnProperty("__roles__")?object.__roles__:[];
             roles.forEach(function(role) {
                 if (role.method.genfun === genfun && index === role.position) {
                     if (discovered_methods.indexOf(role.method) < 0) {
-                        role.method.clear_rank();
+                        clear_rank(role.method);
                         discovered_methods.push(role.method);
                     }
-                    role.method.set_rank_hierarchy_position(index, hierarchy_position);
+                    set_rank_hierarchy_position(role.method, index, hierarchy_position);
                 }
             });
             // When a discovered method would receive more arguments than
@@ -98,7 +84,7 @@
             if (object === Object.prototype) {
                 discovered_methods.forEach(function(method) {
                     if (method.participants.length <= index) {
-                        method.set_rank_hierarchy_position(index, hierarchy_position);
+                        set_rank_hierarchy_position(method, index, hierarchy_position);
                     }
                 });
             }
@@ -107,7 +93,7 @@
         // pretending an Object.prototype object was passed in, but only
         // for dispatch.
         (args.length?args:[Object.prototype]).forEach(function(arg, index) {
-            get_precedence_list(genfun.dispatchable_object(arg))
+            get_precedence_list(dispatchable_object(arg))
                 .forEach(function(obj, hierarchy_position) {
                     find_and_rank_roles(obj, hierarchy_position, index);
                 });
@@ -115,16 +101,12 @@
         var applicable_methods = discovered_methods.filter(function(method) {
             // This ||1 works with the above hack, for 0-arity calls.
             return ((args.length||1) === method._rank.length &&
-                    method.is_fully_specified());
+                    is_fully_specified(method));
         });
         applicable_methods.sort(function(a, b) {
-            return a.score() > b.score();
+            return score(a) > score(b);
         });
         return applicable_methods;
-    };
-
-    Genfun.prototype.addMethod = function(participants, func) {
-        return new Method(this, participants, func);
     };
 
     /*
@@ -140,6 +122,25 @@
             next_obj = Object.getPrototypeOf(next_obj);
         }
         return precedence_list;
+    };
+
+    /*
+     * Returns a useful dispatch object for value using a process similar to
+     * the ToObject operation specified in http://es5.github.com/#x9.9
+     */
+    function dispatchable_object(value) {
+        switch (typeof value) {
+        case "object":
+            return value;
+        case "boolean":
+            return new Boolean(value);
+        case "number":
+            return new Number(value);
+        case "string":
+            return new String(value);
+        default:
+            return new Object(value);
+        }
     };
 
     /*
@@ -164,12 +165,12 @@
      * * removeMethod(): Remove a method exactly matching a given spec
      */
     function Method(genfun, participants, func) {
-        this.genfun = genfun;
-        this.participants = participants;
-        this.func = func;
-        this._rank = [];
         var method = this;
-        var tmp_participants = this.participants.length?this.participants:[Object.prototype];
+        method.genfun = genfun;
+        method.participants = participants;
+        method.func = func;
+        method._rank = [];
+        var tmp_participants = method.participants.length?method.participants:[Object.prototype];
         for (var i = 0, participant; i < tmp_participants.length; i++) {
             participant = tmp_participants.hasOwnProperty(i)?
                 tmp_participants[i]:
@@ -187,26 +188,26 @@
         }
     };
 
-    Method.prototype.set_rank_hierarchy_position = function(index, hierarchy_position) {
-        this._rank[index] = hierarchy_position;
+    function set_rank_hierarchy_position(method, index, hierarchy_position) {
+        method._rank[index] = hierarchy_position;
     };
 
-    Method.prototype.clear_rank = function() {
-        this._rank = [];
+    function clear_rank(method) {
+        method._rank = [];
     };
 
-    Method.prototype.is_fully_specified = function() {
-        for (var i = 0; i < this.participants.length; i++) {
-            if (!this._rank.hasOwnProperty(i)) {
+    function is_fully_specified(method) {
+        for (var i = 0; i < method.participants.length; i++) {
+            if (!method._rank.hasOwnProperty(i)) {
                 return false;
             }
         }
         return true;
     };
 
-    Method.prototype.score = function() {
+    function score(method) {
         // TODO - this makes all items in the list equal
-        return this._rank.reduce(function(a, b) { return a + b; }, 0);
+        return method._rank.reduce(function(a, b) { return a + b; }, 0);
     };
 
     /*
