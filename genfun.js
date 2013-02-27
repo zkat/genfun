@@ -17,7 +17,7 @@
      *
      * TODO:
      *
-     * * More portability (currently rely on 1.8.0+ features)
+     * * Test code in lesser browsers (see: IE7/IE8). May only need to shim forEach.
      *
      * * Try out alternative syntax for addMethod (not really exciting, but
      *   it might be fun to try it out)
@@ -35,6 +35,8 @@
      * * Caching
      *
      * * See if v8/*monkey/etc provide any implementation-specific access to maps.
+     *
+     * * Keep trying things until genfuns are as fast as native methods (probably impossible).
      */
     function Genfun() {
         var genfun = this;
