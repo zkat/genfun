@@ -38,7 +38,8 @@
         frobnicate.addMethod(
             [Number.prototype, , String.prototype],
             function(number, anything, string) {
-                return "number + anything + string: " + number + ", " + anything + ", " + string;
+                return "number + anything + string: "
+                    + number + ", " + anything + ", " + string;
             });
 
         test("string + number: foo, 1", [new String("foo"), new Number(1)]);
@@ -55,7 +56,10 @@
         function test(expected, args) {
             var result = frobnicate.apply(this, args);
             if (result != expected) {
-                throw Error("Tests failed. Expected "+expected+" but got "+result);
+                throw Error("Tests failed. Expected "
+                            +expected
+                            +" but got "
+                            +result);
             }
         };
     };
@@ -86,23 +90,29 @@
             test_obj.test_method();
         });
 
-        test_genfun.addMethod([TestObj.prototype], function(test_obj) {
-            return test_obj.toString() + "test";
-        });
+        test_genfun.addMethod(
+            [TestObj.prototype],
+            function(test_obj) {
+                return test_obj.toString() + "test";
+            });
         bench("Singly-dispatched genfun", function() {
             test_genfun(test_obj);
         });
 
-        test_genfun.addMethod([TestObj.prototype, TestObj.prototype], function(test_obj1, test_obj2) {
-            return test_obj.toString() + "test";
-        });
+        test_genfun.addMethod(
+            [TestObj.prototype, TestObj.prototype],
+            function(test_obj1, test_obj2) {
+                return test_obj.toString() + "test";
+            });
         bench("Double-dispatched genfun", function() {
             test_genfun(test_obj, test_obj);
         });
 
-        test_genfun.addMethod([TestObj.prototype, String.prototype], function(test_obj1, string) {
-            return test_obj.toString() + string;
-        });
+        test_genfun.addMethod(
+            [TestObj.prototype, String.prototype],
+            function(test_obj1, string) {
+                return test_obj.toString() + string;
+            });
         bench("Double-dispatched genfun with string primitive", function() {
             test_genfun(test_obj, "test");
         });
