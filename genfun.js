@@ -39,7 +39,7 @@
     function Genfun() {
         var genfun = this;
         var fun = function() {
-            apply_genfun(genfun, this, arguments);
+            return apply_genfun(genfun, this, arguments);
         };
         fun.genfun = genfun;
         fun.addMethod = function(participants, func) { add_method(genfun, participants, func); };
@@ -58,7 +58,7 @@
     function apply_genfun(genfun, newthis, args) {
         var applicable_methods = compute_applicable_methods(genfun, args);
         if (applicable_methods.length) {
-            applicable_methods[0].func.apply(newthis, args);
+            return applicable_methods[0].func.apply(newthis, args);
         } else {
             throw Error("No applicable methods");
         }
