@@ -235,9 +235,10 @@
         typeof define.amd == "object" &&
         define.amd) {
         define(function() {
-            return Genfun;
+            return {
+                Genfun: Genfun,
+                add_method: add_method,
+                remove_method: remove_method};
         });
     }
-
-
 })(this);
