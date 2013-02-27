@@ -17,7 +17,8 @@
      *
      * TODO:
      *
-     * * Test code in lesser browsers (see: IE7/IE8). May only need to shim forEach.
+     * * Test code in lesser browsers (see: IE7/IE8).
+     *   May only need to shim forEach.
      *
      * * Try out alternative syntax for addMethod (not really exciting, but
      *   it might be fun to try it out)
@@ -34,9 +35,10 @@
      *
      * * Caching
      *
-     * * See if v8/*monkey/etc provide any implementation-specific access to maps.
+     * * See if v8/*monkey/etc provide any useful access to maps.
      *
-     * * Keep trying things until genfuns are as fast as native methods (probably impossible).
+     * * Keep trying things until genfuns are as fast as native methods
+     *  (probably impossible).
      */
     function Genfun() {
         var genfun = this;
@@ -44,8 +46,12 @@
             return apply_genfun(genfun, this, arguments);
         };
         fun.genfun = genfun;
-        fun.addMethod = function(participants, func) { add_method(genfun, participants, func); };
-        fun.removeMethod = function(participants) { remove_method(genfun, participants); };
+        fun.addMethod = function(participants, func) {
+            add_method(genfun, participants, func);
+        };
+        fun.removeMethod = function(participants) {
+            remove_method(genfun, participants);
+        };
         return fun;
     };
 
@@ -77,7 +83,8 @@
                         clear_rank(role.method);
                         discovered_methods.push(role.method);
                     }
-                    set_rank_hierarchy_position(role.method, index, hierarchy_position);
+                    set_rank_hierarchy_position(
+                        role.method, index, hierarchy_position);
                 }
             });
             // When a discovered method would receive more arguments than
@@ -86,7 +93,8 @@
             if (object === Object.prototype) {
                 discovered_methods.forEach(function(method) {
                     if (method.participants.length <= index) {
-                        set_rank_hierarchy_position(method, index, hierarchy_position);
+                        set_rank_hierarchy_position(
+                            method, index, hierarchy_position);
                     }
                 });
             }
@@ -172,7 +180,9 @@
         method.participants = participants;
         method.func = func;
         method._rank = [];
-        var tmp_participants = method.participants.length?method.participants:[Object.prototype];
+        var tmp_participants = method.participants.length?
+                method.participants:
+                [Object.prototype];
         for (var i = 0, participant; i < tmp_participants.length; i++) {
             participant = tmp_participants.hasOwnProperty(i)?
                 tmp_participants[i]:
