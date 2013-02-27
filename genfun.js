@@ -229,7 +229,7 @@
      * Snippet for AMD support taken partially from lodash
      */
 
-    window.Genfun = Genfun;
+    if (window) window.Genfun = Genfun;
 
     if (typeof define == "function" &&
         typeof define.amd == "object" &&
