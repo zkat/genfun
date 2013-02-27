@@ -71,6 +71,14 @@
         /*
          * Tests
          */
+
+        function test_function(test_obj) {
+            return test_obj.toString() + "test";
+        };
+        bench("Regular function", function() {
+            test_function(test_obj);
+        });
+
         TestObj.prototype.test_method = function() {
             return this.toString() + "test";
         };
