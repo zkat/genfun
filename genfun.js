@@ -29,6 +29,9 @@
      *
      * Optimization:
      *
+     * * Implement a PIC for dispatch:
+     *   https://en.wikipedia.org/wiki/Inline_caching#Polymorphic_inline_caching
+     *
      * * Use partial dispatch trick
      *
      * * Use integers/bitfields for rank vectors instead of arrays (small gain)
@@ -44,6 +47,8 @@
      */
     function Genfun() {
         var genfun = this;
+        genfun.methods = [];
+        var cache = undefined;
         var fun = function() {
             return apply_genfun(genfun, this, arguments);
         };
@@ -58,7 +63,10 @@
     };
 
     function add_method(genfun, participants, func) {
-        return new Method(genfun, participants, func);
+        var method = new Method(genfun, participants, func);
+        genfun.methods.push(method);
+        genfun.cache = undefined;
+        return method;
     };
 
     function remove_method(genfun, participants) {
@@ -66,13 +74,68 @@
     };
 
     function apply_genfun(genfun, newthis, args) {
-        var applicable_methods = compute_applicable_methods(genfun, args);
+        var applicable_methods = get_applicable_methods(genfun, args);
         if (applicable_methods.length) {
             return applicable_methods[0].func.apply(newthis, args);
         } else {
             throw Error("No applicable methods");
         }
     };
+
+    function get_applicable_methods(genfun, args) {
+        var applicable_methods;
+        if (cacheable_args(genfun, args)) {
+            var methods = cached_methods(genfun, args);
+            if (methods) {
+                applicable_methods = methods;
+            } else {
+                applicable_methods = compute_applicable_methods(genfun, args);
+                cache_args(genfun, args, applicable_methods);
+            }
+        } else {
+            applicable_methods = compute_applicable_methods(genfun, args);
+        }
+        return applicable_methods;
+    }
+
+    function cache_args(genfun, args, methods) {
+        var key = [];
+        for (var i = 0; i < args.length; i++) {
+            key[i] = Object.getPrototypeOf(dispatchable_object(args[i]));
+        }
+        genfun.cache = {
+            key: key,
+            methods: methods
+        };
+    }
+
+    function cacheable_args(genfun, args) {
+        var arg, roles;
+        for (var i = 0; i < args.length; i++) {
+            arg = args[i];
+            if (arg.hasOwnProperty("__roles__")) {
+                for (var j = 0; j < arg.__roles__.length; j++) {
+                    var role = arg.__roles__[j];
+                    if (role.method.genfun == genfun) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    function cached_methods(genfun, args) {
+        if (!genfun.cache) return undefined;
+        for (var i = 0; i < genfun.cache.key.length; i++) {
+            if (args[i]
+                && genfun.cache.key[i]
+                != Object.getPrototypeOf(dispatchable_object(args[i]))) {
+                return undefined;
+            }
+        }
+        return genfun.cache.methods;
+    }
 
     function compute_applicable_methods(genfun, args) {
         args = [].slice.call(args);
