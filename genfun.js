@@ -47,10 +47,10 @@
         };
         fun.genfun = genfun;
         fun.addMethod = function(participants, func) {
-            add_method(genfun, participants, func);
+            return add_method(genfun, participants, func);
         };
         fun.removeMethod = function(participants) {
-            remove_method(genfun, participants);
+            return remove_method(genfun, participants);
         };
         return fun;
     };
