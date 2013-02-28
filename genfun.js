@@ -25,15 +25,17 @@
      *
      * * Method combination (or at least next_method())
      *
+     * * Track down and submit a bug report for the stupid Object.prototype bug in Fx
+     *
      * Optimization:
      *
      * * Use partial dispatch trick
      *
-     * * Use integers/bitfields for rank vectors instead of arrays
+     * * Use integers/bitfields for rank vectors instead of arrays (small gain)
      *
      * * Don't bother adding roles to Object.prototype, except for position 0
      *
-     * * Caching
+     * * Caching (probably will make more sense with method combination)
      *
      * * See if v8/*monkey/etc provide any useful access to maps.
      *
