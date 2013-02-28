@@ -92,7 +92,7 @@
             // on Object.prototype.
             if (object === Object.prototype) {
                 discovered_methods.forEach(function(method) {
-                    if (method.participants.length <= index) {
+                    if (method.minimal_participants <= index) {
                         set_rank_hierarchy_position(
                             method, index, hierarchy_position);
                     }
@@ -177,26 +177,40 @@
     function Method(genfun, participants, func) {
         var method = this;
         method.genfun = genfun;
-        method.participants = participants;
         method.func = func;
         method._rank = [];
-        var tmp_participants = method.participants.length?
-                method.participants:
-                [Object.prototype];
-        for (var i = 0, participant; i < tmp_participants.length; i++) {
-            participant = tmp_participants.hasOwnProperty(i)?
+        method.minimal_participants = 0;
+
+        // TODO: The following is false in Firefox:
+        // console.log(window.objproto == Object.prototype);
+
+        var tmp_participants = participants.length?participants:[Object.prototype];
+        for (var object, i = tmp_participants.length - 1; i >= 0; i--) {
+            object = tmp_participants.hasOwnProperty(i)?
                 tmp_participants[i]:
                 Object.prototype;
-            // __roles__ was deemed Good Enough™ by the committee for
-            // arbitrary property definition
-            if (!participant.hasOwnProperty("__roles__")) {
-                Object.defineProperty(
-                    participant, "__roles__", {value: [], enumerable: false});
-            };
-            // HACK - no method replacement now, so we just shove it in a
-            // place where it'll always show up first. This would probably
-            // seriously break method combination if we had it.
-            participant.__roles__.unshift(new Role(method, i));
+            if (i > 0
+                && method.minimal_participants == 0
+                && object == Object.prototype) {
+                // Firefox bug: Object.prototype has equivalency issues.
+                continue;
+            } else {
+                method.minimal_participants++;
+                if (!object.hasOwnProperty("__roles__")) {
+                    if (typeof Object.defineProperty != "undefined") {
+                        // Object.defineProperty is JS 1.8.0+
+                        Object.defineProperty(
+                            object, "__roles__", {value: [], enumerable: false});
+                    } else {
+                        object.__roles__ = [];
+                    }
+                }
+                // XXX HACK - no method replacement now, so we just shove
+                // it in a place where it'll always show up first. This
+                // would probably seriously break method combination if we
+                // had it.
+                object.__roles__.unshift(new Role(method, i));
+            }
         }
     };
 
@@ -209,7 +223,7 @@
     };
 
     function is_fully_specified(method) {
-        for (var i = 0; i < method.participants.length; i++) {
+        for (var i = 0; i < method.minimal_participants; i++) {
             if (!method._rank.hasOwnProperty(i)) {
                 return false;
             }
