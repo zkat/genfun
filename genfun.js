@@ -48,7 +48,7 @@
     function Genfun() {
         var genfun = this;
         genfun.methods = [];
-        var cache = undefined;
+        var cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
         var fun = function() {
             return apply_genfun(genfun, this, arguments);
         };
@@ -62,10 +62,17 @@
         return fun;
     };
 
+    Genfun.UNITIALIZED = 0;
+    Genfun.MONOMORPHIC = 1;
+    Genfun.POLYMORPHIC = 2;
+    Genfun.MEGAMORPHIC = 3;
+
+    Genfun.MAX_CACHE_SIZE = 8;
+
     function add_method(genfun, participants, func) {
         var method = new Method(genfun, participants, func);
         genfun.methods.push(method);
-        genfun.cache = undefined;
+        genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
         return method;
     };
 
@@ -99,14 +106,20 @@
     }
 
     function cache_args(genfun, args, methods) {
+	if (genfun.cache.state == Genfun.MEGAMORPHIC) return;
         var key = [];
         for (var i = 0; i < args.length; i++) {
             key[i] = Object.getPrototypeOf(dispatchable_object(args[i]));
         }
-        genfun.cache = {
-            key: key,
-            methods: methods
-        };
+        genfun.cache.key.unshift(key);
+	genfun.cache.methods.unshift(methods);
+	if (genfun.cache.key.length == 1) {
+	    genfun.cache.state = Genfun.MONOMORPHIC;
+	} else if (genfun.cache.key.length < Genfun.MAX_CACHE_SIZE) {
+	    genfun.cache.state = Genfun.POLYMORPHIC;
+	} else {
+	    genfun.cache.state = Genfun.MEGAMORPHIC
+	}
     }
 
     function cacheable_args(genfun, args) {
@@ -126,15 +139,26 @@
     }
 
     function cached_methods(genfun, args) {
-        if (!genfun.cache) return undefined;
-        for (var i = 0; i < genfun.cache.key.length; i++) {
-            if (args[i]
-                && genfun.cache.key[i]
-                != Object.getPrototypeOf(dispatchable_object(args[i]))) {
-                return undefined;
-            }
+	if (genfun.cache.state == Genfun.UNINITIALIZED ||
+	    genfun.cache.state == Genfun.MEGAMORPHIC) return;
+	var protos = [].map.call(args, function(arg) {
+	    return Object.getPrototypeOf(dispatchable_object(arg));
+	});
+	for (var i = 0; i < genfun.cache.key.length; i++) {
+	    if (match_cached_methods(genfun.cache.key[i], protos)) {
+		return genfun.cache.methods[i];
+	    }
+	}
+    }
+
+    function match_cached_methods(key, protos) {
+	if (key.length != protos.length) return false;
+        for (var i = 0; i < key.length; i++) {
+	    if (key[i] != protos[i]) {
+                return false;
+	    }
         }
-        return genfun.cache.methods;
+	return true;
     }
 
     function compute_applicable_methods(genfun, args) {
