@@ -36,8 +36,6 @@
      *
      * * Use integers/bitfields for rank vectors instead of arrays (small gain)
      *
-     * * Don't bother adding roles to Object.prototype, except for position 0
-     *
      * * Caching (probably will make more sense with method combination)
      *
      * * See if v8/*monkey/etc provide any useful access to maps.
