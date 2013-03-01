@@ -153,7 +153,7 @@
             // When a discovered method would receive more arguments than
             // were specialized, we pretend all extra arguments have a role
             // on Object.prototype.
-            if (object === Object.prototype) {
+            if (is_object_proto(object)) {
                 discovered_methods.forEach(function(method) {
                     if (method.minimal_participants <= index) {
                         set_rank_hierarchy_position(
@@ -254,8 +254,7 @@
                 Object.prototype;
             if (i > 0
                 && method.minimal_participants == 0
-                && object == Object.prototype) {
-                // Firefox bug: Object.prototype has equivalency issues.
+                && is_object_proto(object)) {
                 continue;
             } else {
                 method.minimal_participants++;
@@ -329,5 +328,15 @@
                 add_method: add_method,
                 remove_method: remove_method};
         });
+    }
+
+    /*
+     * XXX HACK Firefox gives weird errors where the global
+     * Object.prototype !== the one inside this closure, so we tag it
+     * here and use that for comparisons.
+     */
+    Object.prototype.___isobjectproto___ = true;
+    function is_object_proto(obj) {
+	return obj.hasOwnProperty("___isobjectproto___");
     }
 })(this);
