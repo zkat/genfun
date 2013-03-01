@@ -89,16 +89,12 @@
 
     function get_applicable_methods(genfun, args) {
         var applicable_methods;
-        if (cacheable_args(genfun, args)) {
-            var methods = cached_methods(genfun, args);
-            if (methods) {
-                applicable_methods = methods;
-            } else {
-                applicable_methods = compute_applicable_methods(genfun, args);
-                cache_args(genfun, args, applicable_methods);
-            }
+	var maybe_methods = cached_methods(genfun, args);
+        if (maybe_methods) {
+            applicable_methods = maybe_methods;
         } else {
             applicable_methods = compute_applicable_methods(genfun, args);
+            cache_args(genfun, args, applicable_methods);
         }
         return applicable_methods;
     }
@@ -106,8 +102,14 @@
     function cache_args(genfun, args, methods) {
 	if (genfun.cache.state == Genfun.MEGAMORPHIC) return;
         var key = [];
+	var proto;
         for (var i = 0; i < args.length; i++) {
-            key[i] = Object.getPrototypeOf(dispatchable_object(args[i]));
+	    proto = cacheable_proto(genfun, args[i]);
+	    if (proto) {
+		key[i] = proto;
+	    } else {
+		return;
+	    }
         }
         genfun.cache.key.unshift(key);
 	genfun.cache.methods.unshift(methods);
@@ -120,29 +122,32 @@
 	}
     }
 
-    function cacheable_args(genfun, args) {
-        var arg, roles;
-        for (var i = 0; i < args.length; i++) {
-            arg = args[i];
-            if (arg.hasOwnProperty("__roles__")) {
-                for (var j = 0; j < arg.__roles__.length; j++) {
-                    var role = arg.__roles__[j];
-                    if (role.method.genfun == genfun) {
-                        return false;
-                    }
+    function cacheable_proto(genfun, arg) {
+        if (arg.hasOwnProperty("__roles__")) {
+            for (var j = 0; j < arg.__roles__.length; j++) {
+                var role = arg.__roles__[j];
+                if (role.method.genfun == genfun) {
+                    return;
                 }
             }
         }
-        return true;
+	return Object.getPrototypeOf(dispatchable_object(arg));
     }
 
     function cached_methods(genfun, args) {
 	if (genfun.cache.state == Genfun.UNINITIALIZED ||
 	    genfun.cache.state == Genfun.MEGAMORPHIC) return;
-	var protos = [].map.call(args, function(arg) {
-	    return Object.getPrototypeOf(dispatchable_object(arg));
-	});
-	for (var i = 0; i < genfun.cache.key.length; i++) {
+	var protos = [];
+	var proto;
+	for (var i = 0; i < args.length; i++) {
+	    proto = cacheable_proto(genfun, args[i]);
+	    if (proto) {
+		protos[i] = proto;
+	    } else {
+		return;
+	    }
+	}
+	for (i = 0; i < genfun.cache.key.length; i++) {
 	    if (match_cached_methods(genfun.cache.key[i], protos)) {
 		return genfun.cache.methods[i];
 	    }
