@@ -89,7 +89,7 @@
 
     function get_applicable_methods(genfun, args) {
         var applicable_methods;
-	var maybe_methods = cached_methods(genfun, args);
+        var maybe_methods = cached_methods(genfun, args);
         if (maybe_methods) {
             applicable_methods = maybe_methods;
         } else {
@@ -100,26 +100,26 @@
     }
 
     function cache_args(genfun, args, methods) {
-	if (genfun.cache.state == Genfun.MEGAMORPHIC) return;
+        if (genfun.cache.state == Genfun.MEGAMORPHIC) return;
         var key = [];
-	var proto;
+        var proto;
         for (var i = 0; i < args.length; i++) {
-	    proto = cacheable_proto(genfun, args[i]);
-	    if (proto) {
-		key[i] = proto;
-	    } else {
-		return;
-	    }
+            proto = cacheable_proto(genfun, args[i]);
+            if (proto) {
+                key[i] = proto;
+            } else {
+                return;
+            }
         }
         genfun.cache.key.unshift(key);
-	genfun.cache.methods.unshift(methods);
-	if (genfun.cache.key.length == 1) {
-	    genfun.cache.state = Genfun.MONOMORPHIC;
-	} else if (genfun.cache.key.length < Genfun.MAX_CACHE_SIZE) {
-	    genfun.cache.state = Genfun.POLYMORPHIC;
-	} else {
-	    genfun.cache.state = Genfun.MEGAMORPHIC
-	}
+        genfun.cache.methods.unshift(methods);
+        if (genfun.cache.key.length == 1) {
+            genfun.cache.state = Genfun.MONOMORPHIC;
+        } else if (genfun.cache.key.length < Genfun.MAX_CACHE_SIZE) {
+            genfun.cache.state = Genfun.POLYMORPHIC;
+        } else {
+            genfun.cache.state = Genfun.MEGAMORPHIC
+        }
     }
 
     function cacheable_proto(genfun, arg) {
@@ -131,37 +131,37 @@
                 }
             }
         }
-	return Object.getPrototypeOf(dispatchable_object(arg));
+        return Object.getPrototypeOf(dispatchable_object(arg));
     }
 
     function cached_methods(genfun, args) {
-	if (genfun.cache.state == Genfun.UNINITIALIZED ||
-	    genfun.cache.state == Genfun.MEGAMORPHIC) return;
-	var protos = [];
-	var proto;
-	for (var i = 0; i < args.length; i++) {
-	    proto = cacheable_proto(genfun, args[i]);
-	    if (proto) {
-		protos[i] = proto;
-	    } else {
-		return;
-	    }
-	}
-	for (i = 0; i < genfun.cache.key.length; i++) {
-	    if (match_cached_methods(genfun.cache.key[i], protos)) {
-		return genfun.cache.methods[i];
-	    }
-	}
+        if (genfun.cache.state == Genfun.UNINITIALIZED ||
+            genfun.cache.state == Genfun.MEGAMORPHIC) return;
+        var protos = [];
+        var proto;
+        for (var i = 0; i < args.length; i++) {
+            proto = cacheable_proto(genfun, args[i]);
+            if (proto) {
+                protos[i] = proto;
+            } else {
+                return;
+            }
+        }
+        for (i = 0; i < genfun.cache.key.length; i++) {
+            if (match_cached_methods(genfun.cache.key[i], protos)) {
+                return genfun.cache.methods[i];
+            }
+        }
     }
 
     function match_cached_methods(key, protos) {
-	if (key.length != protos.length) return false;
+        if (key.length != protos.length) return false;
         for (var i = 0; i < key.length; i++) {
-	    if (key[i] != protos[i]) {
+            if (key[i] != protos[i]) {
                 return false;
-	    }
+            }
         }
-	return true;
+        return true;
     }
 
     function compute_applicable_methods(genfun, args) {
@@ -366,6 +366,7 @@
      */
     Object.prototype.___isobjectproto___ = true;
     function is_object_proto(obj) {
-	return obj.hasOwnProperty("___isobjectproto___");
+        return obj.hasOwnProperty("___isobjectproto___");
     }
+
 })(this);
