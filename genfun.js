@@ -65,7 +65,7 @@
     Genfun.POLYMORPHIC = 2;
     Genfun.MEGAMORPHIC = 3;
 
-    Genfun.MAX_CACHE_SIZE = 8;
+    Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache will need to be bigger.
 
     function add_method(genfun, participants, func) {
         var method = new Method(genfun, participants, func);
