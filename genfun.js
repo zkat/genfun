@@ -206,7 +206,7 @@
                     is_fully_specified(method));
         });
         applicable_methods.sort(function(a, b) {
-            return score(a) > score(b);
+            return score(a) - score(b);
         });
         return applicable_methods;
     };
