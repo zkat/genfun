@@ -118,7 +118,7 @@
         } else if (genfun.cache.key.length < Genfun.MAX_CACHE_SIZE) {
             genfun.cache.state = Genfun.POLYMORPHIC;
         } else {
-            genfun.cache.state = Genfun.MEGAMORPHIC
+            genfun.cache.state = Genfun.MEGAMORPHIC;
         }
     }
 
