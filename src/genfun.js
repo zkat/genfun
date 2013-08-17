@@ -31,6 +31,7 @@ function Genfun() {
     return apply_genfun(genfun, this, arguments);
   };
   fun.genfun = genfun;
+  genfun._wrapper_function = fun;
   fun.addMethod = function(participants, func) {
     return add_method(genfun, participants, func);
   };
