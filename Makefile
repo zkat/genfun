@@ -21,4 +21,6 @@ clean:
 
 .PHONY: test
 test:
-	./node_modules/mocha/bin/mocha --reporter spec
+	./node_modules/mocha/bin/mocha \
+		--reporter spec \
+		--check-leaks
