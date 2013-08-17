@@ -1,0 +1,32 @@
+* archive [0/0]
+* backlog [0/0]
+** TODO IE7/IE8 support                                              :compat:
+   May only need to shim array methods.
+* active [0/15]
+** TODO Write a package.json file                                  :yakshave:
+** TODO Use mocha for tests                                        :yakshave:
+** TODO Add build system                                           :yakshave:
+** TODO Method combination                                          :feature:
+   Or at least the ability to Genfun.next_method()
+** TODO Method redefinition                                         :feature:
+   Overwrite methods with identical specs.
+** TODO Method removal                                              :feature:
+   Write a removeMethod() method.
+** TODO CommonJS support                                            :feature:
+   Make sure the system can be loaded/built on commonjs
+** TODO Change function/var naming to camelCase                        :misc:
+** TODO Put together a bug for the Object.prototype thing              :misc:
+** TODO Implement a PIC                                        :optimization:
+   https://en.wikipedia.org/wiki/Inline_caching#Polymorphic_inline_caching
+   How the hell can you do that with JS without a preprocessor?
+** TODO Use partial dispatch trick                             :optimization:
+** TODO Cache effective method function                        :optimization:
+   Can probably be done as part of the PIC?
+** TODO Split genfun.js into multiple files                        :yakshave:
+** TODO Score according to arglist position                         :feature:
+   Right now, all arguments across the arglist are scored evenly. Consider
+   making items earlier in the arglist have greater weight in the scoring
+   algorithm.
+** TODO Metacircular genfun.js                                         :misc:
+   Make genfun.js work off its own style of OO.
+   Probably wait until the damn thing is more stable.
