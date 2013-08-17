@@ -99,9 +99,9 @@ function cache_args(genfun, args, methods) {
 }
 
 function cacheable_proto(genfun, arg) {
-  if (arg.hasOwnProperty("__roles__")) {
-    for (var j = 0; j < arg.__roles__.length; j++) {
-      var role = arg.__roles__[j];
+  if (arg.hasOwnProperty(Role.role_key_name)) {
+    for (var j = 0; j < arg[Role.role_key_name].length; j++) {
+      var role = arg[Role.role_key_name][j];
       if (role.method.genfun == genfun) {
         return;
       }
@@ -144,7 +144,7 @@ function compute_applicable_methods(genfun, args) {
   args = [].slice.call(args);
   var discovered_methods = [];
   function find_and_rank_roles(object, hierarchy_position, index) {
-    var roles = object.hasOwnProperty("__roles__")?object.__roles__:[];
+    var roles = object.hasOwnProperty(Role.role_key_name)?object[Role.role_key_name]:[];
     roles.forEach(function(role) {
       if (role.method.genfun === genfun && index === role.position) {
         if (discovered_methods.indexOf(role.method) < 0) {
@@ -258,20 +258,20 @@ function Method(genfun, participants, func) {
       continue;
     } else {
       method.minimal_participants++;
-      if (!object.hasOwnProperty("__roles__")) {
+      if (!object.hasOwnProperty(Role.role_key_name)) {
         if (typeof Object.defineProperty != "undefined") {
           // Object.defineProperty is JS 1.8.0+
           Object.defineProperty(
-            object, "__roles__", {value: [], enumerable: false});
+            object, Role.role_key_name, {value: [], enumerable: false});
         } else {
-          object.__roles__ = [];
+          object[Role.role_key_name] = [];
         }
       }
       // XXX HACK - no method replacement now, so we just shove
       // it in a place where it'll always show up first. This
       // would probably seriously break method combination if we
       // had it.
-      object.__roles__.unshift(new Role(method, i));
+      object[Role.role_key_name].unshift(new Role(method, i));
     }
   }
 };
@@ -310,6 +310,7 @@ function Role(method, position) {
   this.method = method;
   this.position = position;
 };
+Role.role_key_name = "__" + Math.random().toString(36).substr(2) + "_roles__";
 
 /*
  * XXX HACK Firefox gives weird errors where the global
