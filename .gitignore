@@ -1,2 +1,3 @@
-# Editor backups
 *~
+node_modules/
+build/
