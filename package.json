@@ -8,5 +8,10 @@
   "main" : "genfun.js",
   "version" : "0.0.1",
   "license" : "CC0",
-  "files" : ["genfun.js", "README.md"]
+  "files" : ["Makefile", "README.md", "src/*.js"],
+  "devDependencies": {
+    "browserify": "*",
+    "uglify-js": "*",
+    "mocha": "*"
+  }
 }
