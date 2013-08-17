@@ -1,39 +1,72 @@
-* archive [0/0]
-* backlog [0/0]
-** TODO IE7/IE8 support                                              :compat:
-   May only need to shim array methods.
-* active [4/17]
-** DONE Write a package.json file                                  :yakshave:
+* archive [9/9]
+** DONE Write a package.json file                             :build:release:
    CLOSED: [2013-08-17 Sat 11:05]
-** DONE Add build system                                           :yakshave:
+** DONE Add build system                                              :build:
    CLOSED: [2013-08-17 Sat 11:13]
-** DONE Convert genfun.js to browserify                            :yakshave:
+** DONE Convert genfun.js to browserify                                :misc:
    CLOSED: [2013-08-17 Sat 11:34]
    Make sure there's some way to get the global Genfun object?
 ** DONE CommonJS support                                            :feature:
    CLOSED: [2013-08-17 Sat 11:34]
    Make sure the system can be loaded/built on commonjs
-** TODO Use mocha for tests                                        :yakshave:
-** TODO Write docs                                                 :yakshave:
+** DONE Port tests to mocha                                            :test:
+   CLOSED: [2013-08-17 Sat 12:53]
+** DONE Multiple loader support                                     :feature:
+   CLOSED: [2013-08-17 Sat 13:10]
+   Make genfun.js work whether you're using a raw import, amd, or commonjs
+   UPDATE: awesome, browserify already does this for you. :)
+** DONE Make __roles__ even more obscure                            :feature:
+   CLOSED: [2013-08-17 Sat 13:18]
+   It could still conflict with other internals, unfortunately.
+** DONE Split genfun.js into multiple files                        :yakshave:
+   CLOSED: [2013-08-17 Sat 13:29]
+** DONE Implement Genfun.no_applicable_method                       :feature:
+   CLOSED: [2013-08-17 Sat 14:27]
+   See http://www.lispworks.com/documentation/HyperSpec/Body/f_no_app.htm
+* backlog [0/10]
+** TODO Use partial dispatch trick                             :optimization:
+** TODO Cache effective method function                        :optimization:
+   Can probably be done as part of the PIC?
+** TODO IE7/IE8 support                                              :compat:
+   Array methods, possibly defineProperty usage. Other things, too?
+** TODO Metacircular genfun.js                                         :misc:
+   Make genfun.js work off its own style of OO.
+   Probably wait until the damn thing is more stable.
+** TODO Write benchmark test                                           :test:
+   Write benchmark tests that fail when certain things get too slow. Or,
+   start by searching around for what sort of things people do when they
+   want to test performance from a library.
+** TODO Can I trick browsers into giving me Map information?   :optimization:
+** TODO Change function/var naming to camelCase                        :misc:
+   Ugh. Maybe some day.
+** TODO Put together a bug for the Object.prototype thing              :misc:
+** TODO Inherit from Function if allowed                            :feature:
+** TODO Special-case genfun functions in dispatch                   :feature:
+   If we try to dispatch a genfun's wrapper function, redirect dispatch so
+   that it pretends it's actually working on the genfun.
+* active [0/10]
+** TODO More fine-grained dispatch tests                               :test:
+   Right now, dispatch testing is covered by a single big blob of
+   tests. Make more granular tests that test things like integration with
+   primitives, variable arity methods, empty places in the dispatch array,
+   empty dispatch arrays, prototype inheritance, etc.
+** TODO Write docs                                                     :docs:
+** TODO Make tests runnable in testling                                :test:
+   https://ci.testling.com/
+** TODO Implement a PIC                                        :optimization:
+   https://en.wikipedia.org/wiki/Inline_caching#Polymorphic_inline_caching
+   How the hell can you do that with JS without a preprocessor?
+** TODO make release target                                         :release:
+   Add make release to the Makefile. Should do a test, git tag, and push
+   out to npm.
+** TODO Release on npm                                              :release:
 ** TODO Method combination                                          :feature:
    Or at least the ability to Genfun.next_method()
 ** TODO Method redefinition                                         :feature:
    Overwrite methods with identical specs.
 ** TODO Method removal                                              :feature:
    Write a removeMethod() method.
-** TODO Change function/var naming to camelCase                        :misc:
-** TODO Put together a bug for the Object.prototype thing              :misc:
-** TODO Implement a PIC                                        :optimization:
-   https://en.wikipedia.org/wiki/Inline_caching#Polymorphic_inline_caching
-   How the hell can you do that with JS without a preprocessor?
-** TODO Use partial dispatch trick                             :optimization:
-** TODO Cache effective method function                        :optimization:
-   Can probably be done as part of the PIC?
-** TODO Split genfun.js into multiple files                        :yakshave:
 ** TODO Score according to arglist position                         :feature:
    Right now, all arguments across the arglist are scored evenly. Consider
    making items earlier in the arglist have greater weight in the scoring
    algorithm.
-** TODO Metacircular genfun.js                                         :misc:
-   Make genfun.js work off its own style of OO.
-   Probably wait until the damn thing is more stable.
