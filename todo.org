@@ -2,18 +2,25 @@
 * backlog [0/0]
 ** TODO IE7/IE8 support                                              :compat:
    May only need to shim array methods.
-* active [0/15]
-** TODO Write a package.json file                                  :yakshave:
+* active [4/17]
+** DONE Write a package.json file                                  :yakshave:
+   CLOSED: [2013-08-17 Sat 11:05]
+** DONE Add build system                                           :yakshave:
+   CLOSED: [2013-08-17 Sat 11:13]
+** DONE Convert genfun.js to browserify                            :yakshave:
+   CLOSED: [2013-08-17 Sat 11:34]
+   Make sure there's some way to get the global Genfun object?
+** DONE CommonJS support                                            :feature:
+   CLOSED: [2013-08-17 Sat 11:34]
+   Make sure the system can be loaded/built on commonjs
 ** TODO Use mocha for tests                                        :yakshave:
-** TODO Add build system                                           :yakshave:
+** TODO Write docs                                                 :yakshave:
 ** TODO Method combination                                          :feature:
    Or at least the ability to Genfun.next_method()
 ** TODO Method redefinition                                         :feature:
    Overwrite methods with identical specs.
 ** TODO Method removal                                              :feature:
    Write a removeMethod() method.
-** TODO CommonJS support                                            :feature:
-   Make sure the system can be loaded/built on commonjs
 ** TODO Change function/var naming to camelCase                        :misc:
 ** TODO Put together a bug for the Object.prototype thing              :misc:
 ** TODO Implement a PIC                                        :optimization:
