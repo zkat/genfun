@@ -327,8 +327,4 @@ function is_object_proto(obj) {
 
 if (window) window.Genfun = Genfun;
 
-module.exports = {
-  Genfun: Genfun,
-  add_method: add_method,
-  remove_method: remove_method
-};
+module.exports = Genfun;
