@@ -26,7 +26,7 @@ var Method = require("./method"),
 function Genfun() {
   var genfun = this;
   genfun.methods = [];
-  var cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
+  genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
   var fun = function() {
     return apply_genfun(genfun, this, arguments);
   };
