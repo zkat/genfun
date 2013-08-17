@@ -16,36 +16,32 @@ describe("Genfun", function() {
 	});
   });
 
-  describe("no_applicable_method", function() {
+  describe("noApplicableMethod", function() {
 	var frob = new Genfun(),
 		container = { frob: frob };
 	it("throws an exception if there is no applicable method", function() {
 	  assert.throws(frob, function(err) { return err instanceof Error; });
 	});
 	it("can be modified so something different happens if dispatch fails", function() {
-	  Genfun.no_applicable_method.addMethod(
-		[frob],
-		function() {
-		  return arguments;
-		});
+	  Genfun.addMethod(Genfun.noApplicableMethod, [frob], function() {
+		return arguments;
+	  });
 	  var result = container.frob("foo");
 	  assert.equal(frob, result[0]);
 	  assert.equal(container, result[1]);
 	  assert.equal("foo", result[2]);
 	});
 	it("is only called when dispatch fails", function () {
-	  frob.addMethod(
-		[],
-		function() {
-		  return "regular method";
-		});
+	  Genfun.addMethod(frob, [], function() {
+		return "regular method";
+	  });
 	  assert.equal("regular method", frob());
 	});
   });
   describe("#apply", function() {
 	describe("basic call semantics", function() {
 	  var frob = new Genfun();
-	  frob.addMethod([], function() {
+	  Genfun.addMethod(frob, [], function() {
 		return {"this": this, "arguments": arguments};
 	  });
 	  var container = {frob: frob};
@@ -64,39 +60,46 @@ describe("Genfun", function() {
 	});
 	describe("dispatch", function() {
 	  it("properly dispatches methods", function() {
-		var frobnicate = new Genfun();
+		var frobnicate = new Genfun(),
+			addMethod = Genfun.addMethod;
 
-		frobnicate.addMethod(
+		addMethod(
+		  frobnicate,
           [Number.prototype],
           function(num) {
 			return "one number: "+num;
           });
 
-		frobnicate.addMethod(
-          [String.prototype],
+		addMethod(
+		  frobnicate,
+		  [String.prototype],
           function(str) {
 			return "one string: "+str;
           });
 
-		frobnicate.addMethod(
+		addMethod(
+		  frobnicate,
           [String.prototype, Number.prototype],
           function(string, number) {
 			return "string + number: " + string + ", " + number;
           });
 
-		frobnicate.addMethod(
+		addMethod(
+		  frobnicate,
           [Number.prototype, String.prototype],
           function(number, string) {
 			return "number + string: " + number + ", " + string;
           });
 
-		frobnicate.addMethod(
+		addMethod(
+		  frobnicate,
           [],
           function() {
 			return "Dispatch fell through";
           });
 
-		frobnicate.addMethod(
+		addMethod(
+		  frobnicate,
           [Number.prototype, , String.prototype],
           function(number, anything, string) {
 			return "number + anything + string: "
