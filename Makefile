@@ -10,7 +10,9 @@ build/genfun.min.js build/genfun.js.src: build/genfun.js
 		--source-map build/genfun.js.src
 
 build/genfun.js: src/*.js | build
-	./node_modules/browserify/bin/cmd.js src/genfun.js -o build/genfun.js
+	./node_modules/browserify/bin/cmd.js src/genfun.js \
+		-s Genfun \
+		-o build/genfun.js
 
 build:
 	mkdir -p build
