@@ -61,12 +61,20 @@ function remove_method(genfun, participants) {
 };
 Genfun.remove_method = remove_method;
 
+Genfun.no_applicable_method = new Genfun();
+Genfun.no_applicable_method.addMethod(
+  [],
+  function() {
+    throw new Error("No applicable method");
+  });
+
 function apply_genfun(genfun, newthis, args) {
   var applicable_methods = get_applicable_methods(genfun, args);
   if (applicable_methods.length) {
     return applicable_methods[0].func.apply(newthis, args);
   } else {
-    throw Error("No applicable methods");
+    return Genfun.no_applicable_method.apply(
+      Genfun, [genfun._wrapper_function, newthis].concat([].slice.call(args)));
   }
 };
 

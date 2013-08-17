@@ -16,6 +16,32 @@ describe("Genfun", function() {
 	});
   });
 
+  describe("no_applicable_method", function() {
+	var frob = new Genfun(),
+		container = { frob: frob };
+	it("throws an exception if there is no applicable method", function() {
+	  assert.throws(frob, function(err) { return err instanceof Error; });
+	});
+	it("can be modified so something different happens if dispatch fails", function() {
+	  Genfun.no_applicable_method.addMethod(
+		[frob],
+		function() {
+		  return arguments;
+		});
+	  var result = container.frob("foo");
+	  assert.equal(frob, result[0]);
+	  assert.equal(container, result[1]);
+	  assert.equal("foo", result[2]);
+	});
+	it("is only called when dispatch fails", function () {
+	  frob.addMethod(
+		[],
+		function() {
+		  return "regular method";
+		});
+	  assert.equal("regular method", frob());
+	});
+  });
   describe("#apply", function() {
 	describe("basic call semantics", function() {
 	  var frob = new Genfun();
