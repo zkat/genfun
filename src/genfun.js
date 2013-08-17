@@ -1,5 +1,4 @@
-/* -*- js-indent-level: 2; js2-basic-offset: 2; c-basic-offset: 2; -*- */
-/* -*- indent-tabs-mode: nil; -*- */
+/* -*- js-indent-level: 2; js2-basic-offset: 2; c-basic-offset: 2; indent-tabs-mode: nil; -*- */
 /* vim: set ft=javascript ts=2 et sw=2 tw=80; */
 /*!
  * genfun.js
@@ -11,7 +10,7 @@
  * https://creativecommons.org/licenses/zero/1.0
  *
  */
-"use strict";
+
 /*
  * Genfun
  *
@@ -19,6 +18,11 @@
  * several arguments.
  *
  */
+"use strict";
+var Method = require("./method"),
+    Role = require("./role"),
+    util = require("./util");
+
 function Genfun() {
   var genfun = this;
   genfun.methods = [];
@@ -148,20 +152,20 @@ function compute_applicable_methods(genfun, args) {
     roles.forEach(function(role) {
       if (role.method.genfun === genfun && index === role.position) {
         if (discovered_methods.indexOf(role.method) < 0) {
-          clear_rank(role.method);
+          Method.clear_rank(role.method);
           discovered_methods.push(role.method);
         }
-        set_rank_hierarchy_position(
+        Method.set_rank_hierarchy_position(
           role.method, index, hierarchy_position);
       }
     });
     // When a discovered method would receive more arguments than
     // were specialized, we pretend all extra arguments have a role
     // on Object.prototype.
-    if (is_object_proto(object)) {
+    if (util.is_object_proto(object)) {
       discovered_methods.forEach(function(method) {
         if (method.minimal_participants <= index) {
-          set_rank_hierarchy_position(
+          Method.set_rank_hierarchy_position(
             method, index, hierarchy_position);
         }
       });
@@ -179,10 +183,10 @@ function compute_applicable_methods(genfun, args) {
   var applicable_methods = discovered_methods.filter(function(method) {
     // This ||1 works with the above hack, for 0-arity calls.
     return ((args.length||1) === method._rank.length &&
-            is_fully_specified(method));
+            Method.is_fully_specified(method));
   });
   applicable_methods.sort(function(a, b) {
-    return score(a) - score(b);
+    return Method.score(a) - Method.score(b);
   });
   return applicable_methods;
 };
@@ -220,107 +224,6 @@ function dispatchable_object(value) {
     return new Object(value);
   }
 };
-
-/*
- * Method
- *
- * Methods are added, conceptually, to Genfuns, not to objects
- * themselves, although the Genfun object does not have any pointers to
- * method objects.
- *
- * The _rank vector is an internal datastructure used during dispatch
- * to figure out whether a method is applicable, and if so, how to
- * order multiple discovered methods.
- *
- * Right now, the score method on Method does not take into account any
- * ordering, and all arguments to a method are ranked equally for the
- * sake of ordering.
- *
- */
-function Method(genfun, participants, func) {
-  var method = this;
-  method.genfun = genfun;
-  method.func = func;
-  method._rank = [];
-  method.minimal_participants = 0;
-
-  // TODO: The following is false in Firefox:
-  // console.log(window.objproto == Object.prototype);
-
-  var tmp_participants = participants.length?participants:[Object.prototype];
-  for (var object, i = tmp_participants.length - 1; i >= 0; i--) {
-    object = tmp_participants.hasOwnProperty(i)?
-      tmp_participants[i]:
-      Object.prototype;
-    if (i > 0
-        && method.minimal_participants == 0
-        && is_object_proto(object)) {
-      continue;
-    } else {
-      method.minimal_participants++;
-      if (!object.hasOwnProperty(Role.role_key_name)) {
-        if (typeof Object.defineProperty != "undefined") {
-          // Object.defineProperty is JS 1.8.0+
-          Object.defineProperty(
-            object, Role.role_key_name, {value: [], enumerable: false});
-        } else {
-          object[Role.role_key_name] = [];
-        }
-      }
-      // XXX HACK - no method replacement now, so we just shove
-      // it in a place where it'll always show up first. This
-      // would probably seriously break method combination if we
-      // had it.
-      object[Role.role_key_name].unshift(new Role(method, i));
-    }
-  }
-};
-
-function set_rank_hierarchy_position(method, index, hierarchy_position) {
-  method._rank[index] = hierarchy_position;
-};
-
-function clear_rank(method) {
-  method._rank = [];
-};
-
-function is_fully_specified(method) {
-  for (var i = 0; i < method.minimal_participants; i++) {
-    if (!method._rank.hasOwnProperty(i)) {
-      return false;
-    }
-  }
-  return true;
-};
-
-function score(method) {
-  // TODO - this makes all items in the list equal
-  return method._rank.reduce(function(a, b) { return a + b; }, 0);
-};
-
-/*
- * Role
- *
- * A Role encapsulates a particular object's 'role' in a method's
- * dispatch. They are added directly to the participants for a method,
- * and thus do not prevent the objects a method was defined on from
- * being garbage collected.
- */
-function Role(method, position) {
-  this.method = method;
-  this.position = position;
-};
-Role.role_key_name = "__" + Math.random().toString(36).substr(2) + "_roles__";
-
-/*
- * XXX HACK Firefox gives weird errors where the global
- * Object.prototype !== the one inside this closure, so we tag it
- * here and use that for comparisons.
- */
-Object.prototype.___isobjectproto___ = true;
-function is_object_proto(obj) {
-  return obj.hasOwnProperty("___isobjectproto___");
-}
 
 /*
  * Export
