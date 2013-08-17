@@ -15,33 +15,6 @@
      * Creates generic functions capable of multiple dispatch across
      * several arguments.
      *
-     * TODO:
-     *
-     * * Test code in lesser browsers (see: IE7/IE8).
-     *   May only need to shim forEach.
-     *
-     * * Try out alternative syntax for addMethod (not really exciting, but
-     *   it might be fun to try it out)
-     *
-     * * Method combination (or at least next_method())
-     *
-     * * Track down and submit a bug report for the stupid Object.prototype bug in Fx
-     *
-     * Optimization:
-     *
-     * * Implement a PIC for dispatch:
-     *   https://en.wikipedia.org/wiki/Inline_caching#Polymorphic_inline_caching
-     *
-     * * Use partial dispatch trick
-     *
-     * * Use integers/bitfields for rank vectors instead of arrays (small gain)
-     *
-     * * Caching (probably will make more sense with method combination)
-     *
-     * * See if v8/*monkey/etc provide any useful access to maps.
-     *
-     * * Keep trying things until genfuns are as fast as native methods
-     *  (probably impossible).
      */
     function Genfun() {
         var genfun = this;
@@ -260,11 +233,6 @@
      * ordering, and all arguments to a method are ranked equally for the
      * sake of ordering.
      *
-     * TODO:
-     *
-     * * Method redefinition: overwrite methods with identical specs
-     *
-     * * removeMethod(): Remove a method exactly matching a given spec
      */
     function Method(genfun, participants, func) {
         var method = this;
