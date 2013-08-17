@@ -54,10 +54,12 @@ function add_method(genfun, participants, func) {
   genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
   return method;
 };
+Genfun.add_method = add_method;
 
 function remove_method(genfun, participants) {
   throw Error("not yet implemented");
 };
+Genfun.remove_method = remove_method;
 
 function apply_genfun(genfun, newthis, args) {
   var applicable_methods = get_applicable_methods(genfun, args);
