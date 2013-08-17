@@ -324,7 +324,4 @@ function is_object_proto(obj) {
 /*
  * Export
  */
-
-if (window) window.Genfun = Genfun;
-
 module.exports = Genfun;
