@@ -23,6 +23,11 @@ var Method = require("./method"),
     Role = require("./role"),
     util = require("./util");
 
+module.exports = Genfun;
+
+/*
+ * API
+ */
 function Genfun() {
   var genfun = this;
   genfun.methods = [];
@@ -32,12 +37,6 @@ function Genfun() {
   };
   fun.genfun = genfun;
   genfun._wrapper_function = fun;
-  fun.addMethod = function(participants, func) {
-    return add_method(genfun, participants, func);
-  };
-  fun.removeMethod = function(participants) {
-    return remove_method(genfun, participants);
-  };
   return fun;
 };
 
@@ -48,32 +47,37 @@ Genfun.MEGAMORPHIC = 3;
 
 Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache will need to be bigger.
 
-function add_method(genfun, participants, func) {
+function addMethod(genfun, participants, func) {
+  genfun = typeof genfun === "function" &&
+    genfun.genfun &&
+    genfun.genfun instanceof Genfun ?
+    genfun.genfun : genfun;
   var method = new Method(genfun, participants, func);
   genfun.methods.push(method);
   genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
   return method;
 };
-Genfun.add_method = add_method;
+Genfun.addMethod = addMethod;
 
-function remove_method(genfun, participants) {
+function removeMethod(genfun, participants) {
   throw Error("not yet implemented");
 };
-Genfun.remove_method = remove_method;
+Genfun.removeMethod = removeMethod;
 
-Genfun.no_applicable_method = new Genfun();
-Genfun.no_applicable_method.addMethod(
-  [],
-  function() {
-    throw new Error("No applicable method");
-  });
+Genfun.noApplicableMethod = new Genfun();
+addMethod(Genfun.noApplicableMethod, [], function() {
+  throw new Error("No applicable method");
+});
 
+/*
+ * Internal
+ */
 function apply_genfun(genfun, newthis, args) {
   var applicable_methods = get_applicable_methods(genfun, args);
   if (applicable_methods.length) {
     return applicable_methods[0].func.apply(newthis, args);
   } else {
-    return Genfun.no_applicable_method.apply(
+    return Genfun.noApplicableMethod.apply(
       Genfun, [genfun._wrapper_function, newthis].concat([].slice.call(args)));
   }
 };
@@ -235,8 +239,3 @@ function dispatchable_object(value) {
     return new Object(value);
   }
 };
-
-/*
- * Export
- */
-module.exports = Genfun;
