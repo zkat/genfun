@@ -22,7 +22,8 @@ docs: src/*.js
 
 .PHONY: clean
 clean:
-	-rm -f build/*
+	-rm -rf build
+	-rm -rf docs
 
 .PHONY: test
 test:
