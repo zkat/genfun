@@ -10,7 +10,7 @@
  */
 Object.prototype.___isobjectproto___ = true;
 function is_object_proto(obj) {
-  return obj.hasOwnProperty("___isobjectproto___");
+  return Object.hasOwnProperty.call(obj, "___isobjectproto___");
 }
 
 exports.is_object_proto = is_object_proto;
