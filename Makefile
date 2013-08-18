@@ -1,5 +1,5 @@
 .PHONY: all
-all: test compile docs
+all: test lint compile docs
 
 .PHONY: compile
 compile: $(min-file) $(source-map)
@@ -41,3 +41,8 @@ test: src/*.js
 .PHONY: watch-test
 watch-test: src/*.js
 	$(mocha) --watch
+
+linter = ./node_modules/jshint/bin/jshint
+.PHONY: lint
+lint: src/*.js jshint.conf.json
+	$(linter) --config jshint.conf.json src/*.js
