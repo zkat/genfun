@@ -96,13 +96,16 @@ describe("Genfun", function() {
 		});
 		it("calls noApplicableMethod correctly if [[Proto]] is null and no" +
 		   " applicable method exists for the argument", function() {
-		  var frob = new Genfun(),
-			  nullProto = Object.create(null);
-		  Genfun.addMethod(Genfun.noApplicableMethod, [frob], function() {
-			return "nullProto";
-		  });
-		  assert.equal("nullProto", frob(nullProto));
-		});
+			 var frob = new Genfun(),
+				 nullProto = Object.create(null);
+			 Genfun.addMethod(frob, [], function() {
+			   return "whatever";
+			 });
+			 Genfun.addMethod(Genfun.noApplicableMethod, [frob], function() {
+			   return "nullProto";
+			 });
+			 assert.equal("nullProto", frob(nullProto));
+		   });
 	  });
 	  describe("0-arity dispatch", function() {
 		var frob = new Genfun();
@@ -118,6 +121,21 @@ describe("Genfun", function() {
 		it("compares all given arguments to the dispatch lists for its methods");
 		it("weighs methods based on the arguments' distance to dispatch prototypes");
 		it("gives greater weight to earlier arguments");
+		it("fails dispatch when an object with null [[Proto]]" +
+		   " with no applicable roles is involved", function() {
+			 var frob = new Genfun(),
+				 nullProto = Object.create(null);
+			 Genfun.addMethod(frob, [Object.prototype, Object.prototype], function() {
+			   return "please no";
+			 });
+			 Genfun.addMethod(Genfun.noApplicableMethod, [frob], function() {
+			   return "success";
+			 });
+			 assert.equal("please no", frob({}, {}));
+			 assert.equal("success", frob(nullProto, {}));
+			 assert.equal("success", frob({}, nullProto));
+			 assert.equal("success", frob(nullProto, nullProto));
+		   });
 	  });
 	  describe("variable arity dispatch", function() {
 		it("treats 'unfilled' spaces like Object.prototype when comparing " +
