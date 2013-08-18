@@ -1,4 +1,4 @@
-* archive [12/12]
+* archive [14/14]
 ** DONE Write a package.json file                             :build:release:
    CLOSED: [2013-08-17 Sat 11:05]
 ** DONE Add build system                                              :build:
@@ -34,6 +34,13 @@
    CLOSED: [2013-08-17 Sat 17:14]
    Sphinx looks nice. Maybe I'll try that this time around.
    UPDATE: used jsdoc
+** DONE Fix stack overflow when [[[[Proto]]]] is null                       :bug:
+   CLOSED: [2013-08-17 Sat 21:30]
+   See test failure. It probably has to do with how noApplicableMethod will
+   try to dispatch on all arguments, treating things like Object.prototype.
+** DONE Make tests runnable in testling                                :test:
+   CLOSED: [2013-08-17 Sat 22:59]
+   https://ci.testling.com/
 * backlog [0/9]
 ** TODO Use partial dispatch trick                             :optimization:
 ** TODO Cache effective method function                        :optimization:
@@ -52,12 +59,26 @@
 ** TODO Special-case genfun functions in dispatch                   :feature:
    If we try to dispatch a genfun's wrapper function, redirect dispatch so
    that it pretends it's actually working on the genfun.
-* active [0/11]
+* active [0/14]
+** TODO Release on npm                                              :release:
+** TODO Consistent term for a method's 'participants'            :yakshaving:
 ** TODO More fine-grained dispatch tests                               :test:
    Right now, dispatch testing is covered by a single big blob of
    tests. Make more granular tests that test things like integration with
    primitives, variable arity methods, empty places in the dispatch array,
    empty dispatch arrays, prototype inheritance, etc.
+** TODO split test/genfun.js into multiple files                       :test:
+   It's starting to be a bit of an overwhelming blob of text.
+** TODO Consider using something other than assert for tests           :test:
+** TODO Reconsider how dispatch works when dispatch list is []      :feature:
+   The intent was for it to work like [Object.prototype], but this doesn't
+   really make sense when you're dealing with objects with null
+   [[[[Proto]]]]. Perhaps just get rid of the "feature" altogether? Another
+   possibility is to get rid of noApplicableMethod (or hide it/discourage
+   it) and have [] mean "default".
+   Update: I like the latter idea, but implementation seems to break other
+   things. write some more tests before diving into this one. Need full
+   dispatch coverage, specially for things involving null [[[[Proto]]]]
 ** TODO Improve docs with a tutorial or explanation                    :docs:
    Right now, there's a quickstart and some light API docs. Figure out how
    to best explain what genfun.js does and how to use it.
@@ -72,15 +93,12 @@
        }
      }]
    });
-** TODO Make tests runnable in testling                                :test:
-   https://ci.testling.com/
 ** TODO Implement a PIC                                        :optimization:
    https://en.wikipedia.org/wiki/Inline_caching#Polymorphic_inline_caching
    How the hell can you do that with JS without a preprocessor?
 ** TODO make release target                                         :release:
    Add make release to the Makefile. Should do a test, git tag, and push
    out to npm.
-** TODO Release on npm                                              :release:
 ** TODO Method combination                                          :feature:
    Or at least the ability to Genfun.next_method()
 ** TODO Method redefinition                                         :feature:
