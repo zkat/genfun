@@ -1,8 +1,7 @@
 /* -*- js-indent-level: 2; js2-basic-offset: 2; c-basic-offset: 2; indent-tabs-mode: nil; -*- */
 /* vim: set ft=javascript ts=2 et sw=2 tw=80; */
-/*
- * Miscellaneous utilities
- */
+"use strict";
+
 /*
  * XXX HACK Firefox gives weird errors where the global
  * Object.prototype !== the one inside this closure, so we tag it
