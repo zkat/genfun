@@ -29,7 +29,7 @@ describe("Genfun", function() {
 	  var result = container.frob("foo");
 	  assert.equal(frob, result[0]);
 	  assert.equal(container, result[1]);
-	  assert.equal("foo", result[2]);
+	  assert.equal("foo", result[2][0]);
 	});
 	it("is only called when dispatch fails", function () {
 	  Genfun.addMethod(frob, [], function() {
