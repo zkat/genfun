@@ -1,5 +1,5 @@
 .PHONY: all
-all: test compile
+all: test compile docs
 
 .PHONY: compile
 compile: build/genfun.min.js build/genfun.js.src
@@ -16,6 +16,9 @@ build/genfun.js: src/*.js | build
 
 build:
 	mkdir -p build
+
+docs: src/*.js
+	./node_modules/jsdoc/jsdoc -d docs -c jsdoc.conf.json src/ README.md
 
 .PHONY: clean
 clean:
