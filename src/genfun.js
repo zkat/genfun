@@ -50,10 +50,18 @@ Genfun.addMethod = function(genfun, participants, func) {
     genfun.genfun &&
     genfun.genfun instanceof Genfun ?
     genfun.genfun : genfun;
-  var method = new Method(genfun, [].slice.call(participants), func);
-  genfun.methods.push(method);
-  genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
-  return method;
+  if (participants.length) {
+    var method = new Method(genfun, [].slice.call(participants), func);
+    genfun.methods.push(method);
+    genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
+    return method;
+  } else {
+    return Genfun.addMethod(
+      Genfun.noApplicableMethod,
+      [genfun._wrapper_function], function(_gf, newthis, args) {
+        return func.apply(newthis, args);
+      });
+  }
 };
 
 /**
@@ -132,6 +140,7 @@ function cache_args(genfun, args, methods) {
 }
 
 function cacheable_proto(genfun, arg) {
+  if (arg === null) return;
   if (Object.hasOwnProperty.call(arg, Role.role_key_name)) {
     for (var j = 0; j < arg[Role.role_key_name].length; j++) {
       var role = arg[Role.role_key_name][j];
@@ -202,18 +211,14 @@ function compute_applicable_methods(genfun, args) {
       });
     }
   };
-  // We dispatch 'default' methods if the argument list was empty by
-  // pretending an Object.prototype object was passed in, but only
-  // for dispatch.
-  (args.length?args:[Object.prototype]).forEach(function(arg, index) {
+  args.forEach(function(arg, index) {
     get_precedence_list(dispatchable_object(arg))
       .forEach(function(obj, hierarchy_position) {
         find_and_rank_roles(obj, hierarchy_position, index);
       });
   });
   var applicable_methods = discovered_methods.filter(function(method) {
-    // This ||1 works with the above hack, for 0-arity calls.
-    return ((args.length||1) === method._rank.length &&
+    return (args.length === method._rank.length &&
             Method.is_fully_specified(method));
   });
   applicable_methods.sort(function(a, b) {
