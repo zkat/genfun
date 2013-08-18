@@ -41,8 +41,8 @@ Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache will need to be bigger
  *
  * @function
  * @param {Genfun} genfun - Genfun instance to add the method to.
- * @param {Array} participants - Objects to dispatch this method on.
- * @param {function} methodFunction - Function to execute when the method
+ * @param {Array-like} participants - Objects to dispatch this method on.
+ * @param {Function} methodFunction - Function to execute when the method
  *                                    successfully dispatches.
  */
 Genfun.addMethod = function(genfun, participants, func) {
@@ -62,7 +62,7 @@ Genfun.addMethod = function(genfun, participants, func) {
  *
  * @function
  * @param {Genfun} genfun - Genfun to remove a method from.
- * @param {array-like} participants - Objects to match on when finding a
+ * @param {Array-like} participants - Objects to match on when finding a
  *                                    method to remove.
  */
 Genfun.removeMethod = function(genfun, participants) {
