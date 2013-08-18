@@ -1,48 +1,72 @@
+#
+# Binaries
+#
+module-root = ./node_modules
+uglify = $(module-root)/uglify-js/bin/uglifyjs
+browserify = $(module-root)/browserify/bin/cmd.js
+jsdoc = $(module-root)/jsdoc/jsdoc
+mocha = $(module-root)/mocha/bin/mocha $(mocha-opts)
+linter = $(module-root)/jshint/bin/jshint $(linter-opts)
+
+#
+# Opts
+#
+mocha-opts = --reporter spec \
+				--check-leaks
+linter-opts =
+
+#
+# Files
+#
+main-file = src/genfun.js
+source-files = src/*.js
+build-dir = build
+docs-dir = docs
+browserify-bundle = $(build-dir)/genfun.js
+min-file = $(build-dir)/genfun.min.js
+source-map = $(build-dir)/genfun.js.src
+jsdoc-config = jsdoc.conf.json
+linter-config = jshint.conf.json
+readme = README.md
+
+#
+# Targets
+#
 .PHONY: all
-all: test lint compile docs
+all: lint test docs compile
 
 .PHONY: compile
 compile: $(min-file) $(source-map)
 
-uglify = ./node_modules/uglify-js/bin/uglifyjs
-min-file = build/genfun.min.js
-source-map = build/genfun.js.src
-
-$(min-file) $(source-map): build/genfun.js
-	$(uglify) build/genfun.js \
+$(min-file) $(source-map): $(browserify-bundle)
+	$(uglify) $(browserify-bundle) \
 		-o $(min-file) \
 		--source-map $(source-map)
 
-browserify = ./node_modules/browserify/bin/cmd.js
-build/genfun.js: src/*.js | build
-	$(browserify) src/genfun.js \
+$(browserify-bundle): $(main-file) $(source-files) | $(build-dir)
+	$(browserify) $(main-file) \
 		-s Genfun \
 		-o $@
 
-build:
+$(build-dir):
 	mkdir -p $@
 
-jsdoc  = ./node_modules/jsdoc/jsdoc
-docs: src/*.js README.md jsdoc.conf.json
-	$(jsdoc) -d $@ -c jsdoc.conf.json src/ README.md
+$(docs-dir): $(jsdoc-config) $(source-files) $(readme)
+	$(jsdoc) -d $@ -c $(jsdoc-config) $(source-files) $(readme)
 
 .PHONY: clean
 clean:
-	-rm -rf build
-	-rm -rf docs
+	-rm -rf $(build-dir)
+	-rm -rf $(docs-dir)
 
-mocha = ./node_modules/mocha/bin/mocha \
-			--reporter spec \
-			--check-leaks
 .PHONY: test
-test: src/*.js
+test: $(source-files)
 	$(mocha)
 
-.PHONY: watch-test
-watch-test: src/*.js
-	$(mocha) --watch
+.PHONY: test-watch
+test-watch: $(source-files)
+	$(mocha) --reporter min --watch
 
-linter = ./node_modules/jshint/bin/jshint
 .PHONY: lint
-lint: src/*.js jshint.conf.json
-	$(linter) --config jshint.conf.json src/*.js
+lint: $(source-files) $(linter-config)
+	$(linter) --config $(linter-config) $(source-files)
