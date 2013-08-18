@@ -56,6 +56,7 @@ describe("Genfun", function() {
         assert.equal("success", frob.apply(null, ["success"])["arguments"][0]);
         assert.equal(container, frob.apply(container)["this"]);
       });
+      it("calls noApplicableMethod if there are no methods defined");
     });
     describe("dispatch", function() {
       describe("basic single dispatch", function() {
@@ -97,7 +98,7 @@ describe("Genfun", function() {
            " applicable method exists for the argument", function() {
              var frob = new Genfun(),
                  nullProto = Object.create(null);
-             Genfun.addMethod(frob, [], function() {
+             Genfun.addMethod(frob, [Object.prototype], function() {
                return "whatever";
              });
              Genfun.addMethod(Genfun.noApplicableMethod, [frob], function() {
@@ -109,6 +110,24 @@ describe("Genfun", function() {
       describe("ToObject dispatch conversion", function() {
         it("dispatches primitives according to their ToObject's prototypes" +
            " and passes the original primitive into the effective method function");
+      });
+      describe("Object.prototype empty-index shorthand", function () {
+        var frob = new Genfun();
+        it("lets you write empty array indices into dispatch array" +
+           " to mean Object.prototype", function() {
+             Genfun.addMethod(frob, [,Number.prototype], function(x, num) {
+               return x;
+             });
+             Genfun.addMethod(frob, [String.prototype, Number.prototype], function(x, num) {
+               return num;
+             });
+             Genfun.addMethod(frob, [], function() {
+               return "nomethod";
+             });
+             assert.equal(5, frob(5, 10));
+             assert.equal(10, frob("5", 10));
+             assert.equal("nomethod", frob(Object.create(null), 5));
+           });
       });
       describe("0-arity dispatch", function() {
         var frob = new Genfun();
@@ -229,6 +248,14 @@ describe("Genfun", function() {
         return "success";
       });
       assert.equal("success", frob(nullProto, nullProto));
+    });
+    it("defines and returns a noApplicableMethod method if given an empty array", function() {
+      var frob = new Genfun();
+      Genfun.addMethod(frob, [String.prototype], function() { return "nop"; });
+      assert.equal(true,
+                   Genfun.noApplicableMethod.genfun ===
+                   Genfun.addMethod(frob, [], function() { return "yup"; }).genfun);
+      assert.equal("yup", frob(Object.create(null)));
     });
   });
 
