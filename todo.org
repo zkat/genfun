@@ -1,4 +1,4 @@
-* archive [9/9]
+* archive [12/12]
 ** DONE Write a package.json file                             :build:release:
    CLOSED: [2013-08-17 Sat 11:05]
 ** DONE Add build system                                              :build:
@@ -23,15 +23,23 @@
 ** DONE Implement Genfun.no_applicable_method                       :feature:
    CLOSED: [2013-08-17 Sat 14:27]
    See http://www.lispworks.com/documentation/HyperSpec/Body/f_no_app.htm
-* backlog [0/10]
+** DONE genfun.js-style external API                                    :api:
+   CLOSED: [2013-08-17 Sat 15:15]
+   Change the API so things work more like how genfun.js likes things to be
+   defined (with genfuns being treated more like functions inside modules)
+** DONE camelCase for external interface                               :misc:
+   CLOSED: [2013-08-17 Sat 15:18]
+   Everything that's external should use camelCase like regular javascript.
+** DONE Write docs                                                     :docs:
+   CLOSED: [2013-08-17 Sat 17:14]
+   Sphinx looks nice. Maybe I'll try that this time around.
+   UPDATE: used jsdoc
+* backlog [0/9]
 ** TODO Use partial dispatch trick                             :optimization:
 ** TODO Cache effective method function                        :optimization:
    Can probably be done as part of the PIC?
 ** TODO IE7/IE8 support                                              :compat:
    Array methods, possibly defineProperty usage. Other things, too?
-** TODO Metacircular genfun.js                                         :misc:
-   Make genfun.js work off its own style of OO.
-   Probably wait until the damn thing is more stable.
 ** TODO Write benchmark test                                           :test:
    Write benchmark tests that fail when certain things get too slow. Or,
    start by searching around for what sort of things people do when they
@@ -44,13 +52,26 @@
 ** TODO Special-case genfun functions in dispatch                   :feature:
    If we try to dispatch a genfun's wrapper function, redirect dispatch so
    that it pretends it's actually working on the genfun.
-* active [0/10]
+* active [0/11]
 ** TODO More fine-grained dispatch tests                               :test:
    Right now, dispatch testing is covered by a single big blob of
    tests. Make more granular tests that test things like integration with
    primitives, variable arity methods, empty places in the dispatch array,
    empty dispatch arrays, prototype inheritance, etc.
-** TODO Write docs                                                     :docs:
+** TODO Improve docs with a tutorial or explanation                    :docs:
+   Right now, there's a quickstart and some light API docs. Figure out how
+   to best explain what genfun.js does and how to use it.
+** TODO multiple method definition syntax for new Genfun()          :feature:
+   So you can do something like:
+
+   var frob = new Genfun({
+     methods: [{
+       arguments: [Number.prototype],
+       fun: function(num) {
+         return "got a number!";
+       }
+     }]
+   });
 ** TODO Make tests runnable in testling                                :test:
    https://ci.testling.com/
 ** TODO Implement a PIC                                        :optimization:
