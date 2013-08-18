@@ -1,23 +1,5 @@
 /* -*- js-indent-level: 2; js2-basic-offset: 2; c-basic-offset: 2; indent-tabs-mode: nil; -*- */
 /* vim: set ft=javascript ts=2 et sw=2 tw=80; */
-/*!
- * genfun.js
- *
- * Written by Kat Marchán <kzm@sykosomatic.org>
- *
- * Dedicated to the public domain using CC0 1.0. Consider this code public
- * domain for all intents and purposes. Dedication text can be found at
- * https://creativecommons.org/licenses/zero/1.0
- *
- */
-
-/*
- * Genfun
- *
- * Creates generic functions capable of multiple dispatch across
- * several arguments.
- *
- */
 "use strict";
 var Method = require("./method"),
     Role = require("./role"),
@@ -25,10 +7,17 @@ var Method = require("./method"),
 
 module.exports = Genfun;
 
-/*
- * API
+/**
+ * Creates generic functions capable of multiple dispatch across several
+ * arguments. The generic function returned by this constructor is
+ * functionally identical to a standard function: it can be called,
+ * applied, and receives the expected binding for `this` when appropriate.
+ *
+ * @constructor
+ * @param {object} opts - Options used when initializing the genfun.
+ * @returns {function} New generic function.
  */
-function Genfun() {
+function Genfun(opts) {
   var genfun = this;
   genfun.methods = [];
   genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
@@ -47,25 +36,50 @@ Genfun.MEGAMORPHIC = 3;
 
 Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache will need to be bigger.
 
-function addMethod(genfun, participants, func) {
+/**
+ * Defines a method on a generic function.
+ *
+ * @function
+ * @param {Genfun} genfun - Genfun instance to add the method to.
+ * @param {array-like} participants - Objects to dispatch this method on.
+ * @param {function} methodFunction - Function to execute when the method
+ *                                    successfully dispatches.
+ */
+Genfun.addMethod = function(genfun, participants, func) {
   genfun = typeof genfun === "function" &&
     genfun.genfun &&
     genfun.genfun instanceof Genfun ?
     genfun.genfun : genfun;
-  var method = new Method(genfun, participants, func);
+  var method = new Method(genfun, [].slice.call(participants), func);
   genfun.methods.push(method);
   genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
   return method;
 };
-Genfun.addMethod = addMethod;
 
-function removeMethod(genfun, participants) {
+/**
+ * Removes a previously-defined method on `genfun` that matches
+ * `participants` exactly.
+ *
+ * @function
+ * @param {Genfun} genfun - Genfun to remove a method from.
+ * @param {array-like} participants - Objects to match on when finding a
+ *                                    method to remove.
+ */
+Genfun.removeMethod = function(genfun, participants) {
   throw Error("not yet implemented");
 };
-Genfun.removeMethod = removeMethod;
 
+/**
+ * This generic function is called when `genfun` has been called and no
+ * applicable method was found. The default method throws an `Error`.
+ *
+ * @function
+ * @param {genfun} genfun - Generic function instance that was called.
+ * @param {*} newthis - value of `this` the genfun was called with.
+ * @param {...*} [callArgs] - Arguments the genfun was called with.
+ */
 Genfun.noApplicableMethod = new Genfun();
-addMethod(Genfun.noApplicableMethod, [], function() {
+Genfun.addMethod(Genfun.noApplicableMethod, [], function() {
   throw new Error("No applicable method");
 });
 
