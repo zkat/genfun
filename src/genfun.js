@@ -51,7 +51,13 @@ Genfun.addMethod = function(genfun, participants, func) {
     genfun.genfun instanceof Genfun ?
     genfun.genfun : genfun;
   if (participants.length) {
-    var method = new Method(genfun, [].slice.call(participants), func);
+    participants = [].slice.call(participants);
+    for (var i = 0; i < participants.length; i++) {
+      if (!participants.hasOwnProperty(i)) {
+        participants[i] = Object.prototype;
+      }
+    }
+    var method = new Method(genfun, participants, func);
     genfun.methods.push(method);
     genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
     return method;
