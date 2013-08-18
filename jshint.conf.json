@@ -7,12 +7,11 @@
   "trailing": true,
   "quotmark": true,
   "newcap": true,
-  "latedef": true,
   "indent": 2,
   "immed": true,
   "forin": true,
   "eqeqeq": true,
-  "curly": true,
+  "curly": false,
   "camelcase": false, // eventually should be true
   "es3": false // Eventually should be true
 }

@@ -1,11 +1,9 @@
-/* -*- js-indent-level: 2; js2-basic-offset: 2; c-basic-offset: 2; indent-tabs-mode: nil; -*- */
+/* -*- js2-basic-offset: 2; indent-tabs-mode: nil; -*- */
 /* vim: set ft=javascript ts=2 et sw=2 tw=80; */
 "use strict";
 var Method = require("./method"),
     Role = require("./role"),
     util = require("./util");
-
-module.exports = Genfun;
 
 /**
  * Creates generic functions capable of multiple dispatch across several
@@ -17,7 +15,7 @@ module.exports = Genfun;
  * @param {object} [opts] - Options used when initializing the genfun.
  * @returns {function} New generic function.
  */
-function Genfun(opts) {
+function Genfun() {
   var genfun = this;
   genfun.methods = [];
   genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
@@ -27,14 +25,14 @@ function Genfun(opts) {
   fun.genfun = genfun;
   genfun._wrapper_function = fun;
   return fun;
-};
+}
 
 Genfun.UNITIALIZED = 0;
 Genfun.MONOMORPHIC = 1;
 Genfun.POLYMORPHIC = 2;
 Genfun.MEGAMORPHIC = 3;
 
-Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache will need to be bigger.
+Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache needs to be bigger.
 
 /**
  * Defines a method on a generic function.
@@ -79,8 +77,8 @@ Genfun.addMethod = function(genfun, participants, func) {
  * @param {Array-like} participants - Objects to match on when finding a
  *                                    method to remove.
  */
-Genfun.removeMethod = function(genfun, participants) {
-  throw Error("not yet implemented");
+Genfun.removeMethod = function() {
+  throw new Error("not yet implemented");
 };
 
 /**
@@ -108,7 +106,7 @@ function apply_genfun(genfun, newthis, args) {
     return Genfun.noApplicableMethod.call(
       Genfun, genfun._wrapper_function, newthis, args);
   }
-};
+}
 
 function get_applicable_methods(genfun, args) {
   var applicable_methods;
@@ -123,7 +121,7 @@ function get_applicable_methods(genfun, args) {
 }
 
 function cache_args(genfun, args, methods) {
-  if (genfun.cache.state == Genfun.MEGAMORPHIC) return;
+  if (genfun.cache.state === Genfun.MEGAMORPHIC) return;
   var key = [];
   var proto;
   for (var i = 0; i < args.length; i++) {
@@ -136,7 +134,7 @@ function cache_args(genfun, args, methods) {
   }
   genfun.cache.key.unshift(key);
   genfun.cache.methods.unshift(methods);
-  if (genfun.cache.key.length == 1) {
+  if (genfun.cache.key.length === 1) {
     genfun.cache.state = Genfun.MONOMORPHIC;
   } else if (genfun.cache.key.length < Genfun.MAX_CACHE_SIZE) {
     genfun.cache.state = Genfun.POLYMORPHIC;
@@ -150,7 +148,7 @@ function cacheable_proto(genfun, arg) {
   if (Object.hasOwnProperty.call(arg, Role.role_key_name)) {
     for (var j = 0; j < arg[Role.role_key_name].length; j++) {
       var role = arg[Role.role_key_name][j];
-      if (role.method.genfun == genfun) {
+      if (role.method.genfun === genfun) {
         return;
       }
     }
@@ -159,8 +157,8 @@ function cacheable_proto(genfun, arg) {
 }
 
 function cached_methods(genfun, args) {
-  if (genfun.cache.state == Genfun.UNINITIALIZED ||
-      genfun.cache.state == Genfun.MEGAMORPHIC) return;
+  if (genfun.cache.state === Genfun.UNINITIALIZED ||
+      genfun.cache.state === Genfun.MEGAMORPHIC) return;
   var protos = [];
   var proto;
   for (var i = 0; i < args.length; i++) {
@@ -179,9 +177,9 @@ function cached_methods(genfun, args) {
 }
 
 function match_cached_methods(key, protos) {
-  if (key.length != protos.length) return false;
+  if (key.length !== protos.length) return false;
   for (var i = 0; i < key.length; i++) {
-    if (key[i] != protos[i]) {
+    if (key[i] !== protos[i]) {
       return false;
     }
   }
@@ -216,7 +214,7 @@ function compute_applicable_methods(genfun, args) {
         }
       });
     }
-  };
+  }
   args.forEach(function(arg, index) {
     get_precedence_list(dispatchable_object(arg))
       .forEach(function(obj, hierarchy_position) {
@@ -231,7 +229,7 @@ function compute_applicable_methods(genfun, args) {
     return Method.score(a) - Method.score(b);
   });
   return applicable_methods;
-};
+}
 
 /*
  * Helper function for getting an array representing the entire
@@ -246,23 +244,30 @@ function get_precedence_list(obj) {
     next_obj = Object.getPrototypeOf(next_obj);
   }
   return precedence_list;
-};
+}
 
 /*
  * Returns a useful dispatch object for value using a process similar to
  * the ToObject operation specified in http://es5.github.com/#x9.9
  */
 function dispatchable_object(value) {
+  // To shut up jshint, which doesn't let me turn off this warning.
+  var Bool = Boolean,
+      Num = Number,
+      Str = String,
+      Obj = Object;
   switch (typeof value) {
   case "object":
     return value;
   case "boolean":
-    return new Boolean(value);
+    return new Bool(value);
   case "number":
-    return new Number(value);
+    return new Num(value);
   case "string":
-    return new String(value);
+    return new Str(value);
   default:
-    return new Object(value);
+    return new Obj(value);
   }
-};
+}
+
+module.exports = Genfun;

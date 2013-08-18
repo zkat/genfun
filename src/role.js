@@ -1,4 +1,4 @@
-/* -*- js-indent-level: 2; js2-basic-offset: 2; c-basic-offset: 2; indent-tabs-mode: nil; -*- */
+/* -*- js2-basic-offset: 2; indent-tabs-mode: nil; -*- */
 /* vim: set ft=javascript ts=2 et sw=2 tw=80; */
 "use strict";
 
@@ -13,7 +13,7 @@
 function Role(method, position) {
   this.method = method;
   this.position = position;
-};
+}
 Role.role_key_name = "__" + Math.random().toString(36).substr(2) + "_roles__";
 
 module.exports = Role;
