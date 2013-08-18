@@ -1,4 +1,4 @@
-/* -*- js-indent-level: 2; js2-basic-offset: 2; c-basic-offset: 2; indent-tabs-mode: nil; -*- */
+/* -*- js2-basic-offset: 2; indent-tabs-mode: nil; -*- */
 /* vim: set ft=javascript ts=2 et sw=2 tw=80; */
 /*
  * Method
@@ -35,14 +35,14 @@ function Method(genfun, participants, func) {
     object = Object.hasOwnProperty.call(tmp_participants, i) ?
       tmp_participants[i] :
       Object.prototype;
-    if (i > 0
-        && method.minimal_participants == 0
-        && util.is_object_proto(object)) {
+    if (i > 0 &&
+        !method.minimal_participants &&
+        util.is_object_proto(object)) {
       continue;
     } else {
       method.minimal_participants++;
       if (!Object.hasOwnProperty.call(object, Role.role_key_name)) {
-        if (typeof Object.defineProperty != "undefined") {
+        if (Object.defineProperty) {
           // Object.defineProperty is JS 1.8.0+
           Object.defineProperty(
             object, Role.role_key_name, {value: [], enumerable: false});
@@ -57,16 +57,16 @@ function Method(genfun, participants, func) {
       object[Role.role_key_name].unshift(new Role(method, i));
     }
   }
-};
+}
 
 function set_rank_hierarchy_position(method, index, hierarchy_position) {
   method._rank[index] = hierarchy_position;
-};
+}
 Method.set_rank_hierarchy_position = set_rank_hierarchy_position;
 
 function clear_rank(method) {
   method._rank = [];
-};
+}
 Method.clear_rank = clear_rank;
 
 function is_fully_specified(method) {
@@ -76,13 +76,13 @@ function is_fully_specified(method) {
     }
   }
   return true;
-};
+}
 Method.is_fully_specified = is_fully_specified;
 
 function score(method) {
   // TODO - this makes all items in the list equal
   return method._rank.reduce(function(a, b) { return a + b; }, 0);
-};
+}
 Method.score = score;
 
 module.exports = Method;
