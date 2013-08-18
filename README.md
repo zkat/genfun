@@ -66,3 +66,7 @@ capabilities in a prototype-friendly way. Inspired by
 'prototype-friendly' means that it doesn't keep references from methods to
 objects, so they will be garbage collected normally even if a method has
 been directly defined on them.
+
+### Browser support
+
+[![browser support](http://ci.testling.com/zkat/genfun.js.png)](http://ci.testling.com/zkat/genfun.js)
