@@ -140,6 +140,65 @@ describe("Genfun", function() {
 	  describe("variable arity dispatch", function() {
 		it("treats 'unfilled' spaces like Object.prototype when comparing " +
 		   "methods with dispatch arrays of different lengths");
+		it("handles complex interactions between all the dispatch features", function() {
+		  var frobnicate = new Genfun(),
+			  addMethod = Genfun.addMethod;
+
+		  addMethod(
+			frobnicate,
+			[Number.prototype],
+			function(num) {
+			  return "one number: "+num;
+			});
+
+		  addMethod(
+			frobnicate,
+			[String.prototype],
+			function(str) {
+			  return "one string: "+str;
+			});
+
+		  addMethod(
+			frobnicate,
+			[String.prototype, Number.prototype],
+			function(string, number) {
+			  return "string + number: " + string + ", " + number;
+			});
+
+		  addMethod(
+			frobnicate,
+			[Number.prototype, String.prototype],
+			function(number, string) {
+			  return "number + string: " + number + ", " + string;
+			});
+
+		  addMethod(
+			frobnicate,
+			[],
+			function() {
+			  return "Dispatch fell through";
+			});
+
+		  addMethod(
+			frobnicate,
+			[Number.prototype, , String.prototype],
+			function(number, anything, string) {
+			  return "number + anything + string: "
+				+ number + ", " + anything + ", " + string;
+			});
+
+		  function test(expected, args) {
+			assert.equal(expected, frobnicate.apply(null, args));
+		  }
+		  test("string + number: foo, 1", [new String("foo"), new Number(1)]);
+		  test("number + string: 1, foo", [1, "foo"]);
+		  test("one number: 1", [1, 2]);
+		  test("one number: 1", [1]);
+		  test("one string: str", ["str"]);
+		  test("Dispatch fell through", [true]);
+		  test("Dispatch fell through", []);
+		  test("number + anything + string: 1, true, foo", [1, true, "foo"]);
+		});
 	  });
 	  it("treats empty array items (`[x, ,z]`) like Object.prototype", function() {
 		var frob = new Genfun(),
@@ -153,65 +212,6 @@ describe("Genfun", function() {
 		assert.equal("3-arg method", frob(x, x, x));
 		assert.equal("3-arg method", frob(x, {}, x));
 		assert.equal("0-arg method", frob(x, Object.create(null), x));
-	  });
-	  it("properly dispatches methods", function() {
-		var frobnicate = new Genfun(),
-			addMethod = Genfun.addMethod;
-
-		addMethod(
-		  frobnicate,
-          [Number.prototype],
-          function(num) {
-			return "one number: "+num;
-          });
-
-		addMethod(
-		  frobnicate,
-		  [String.prototype],
-          function(str) {
-			return "one string: "+str;
-          });
-
-		addMethod(
-		  frobnicate,
-          [String.prototype, Number.prototype],
-          function(string, number) {
-			return "string + number: " + string + ", " + number;
-          });
-
-		addMethod(
-		  frobnicate,
-          [Number.prototype, String.prototype],
-          function(number, string) {
-			return "number + string: " + number + ", " + string;
-          });
-
-		addMethod(
-		  frobnicate,
-          [],
-          function() {
-			return "Dispatch fell through";
-          });
-
-		addMethod(
-		  frobnicate,
-          [Number.prototype, , String.prototype],
-          function(number, anything, string) {
-			return "number + anything + string: "
-              + number + ", " + anything + ", " + string;
-          });
-
-		function test(expected, args) {
-		  assert.equal(expected, frobnicate.apply(null, args));
-		}
-		test("string + number: foo, 1", [new String("foo"), new Number(1)]);
-		test("number + string: 1, foo", [1, "foo"]);
-		test("one number: 1", [1, 2]);
-		test("one number: 1", [1]);
-		test("one string: str", ["str"]);
-		test("Dispatch fell through", [true]);
-		test("Dispatch fell through", []);
-		test("number + anything + string: 1, true, foo", [1, true, "foo"]);
 	  });
 	});
   });
