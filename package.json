@@ -7,7 +7,10 @@
   "repository": {"type": "git", "url": "git://github.com/zkat/genfun.js"},
   "main": "build/genfun.js",
   "version": "0.0.0",
-  "license": "CC0",
+  "licenses": [{
+    "type": "CC0",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+  }],
   "files": ["Makefile", "README.md", "src/*.js", "build/", "docs/", "test/*.js"],
   "devDependencies": {
     "browserify": "*",
