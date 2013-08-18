@@ -15,6 +15,7 @@
   "devDependencies": {
     "browserify": "*",
     "uglify-js": "*",
+    "jsdoc": "*",
     "jshint": "*",
     "mocha": "*"
   },
