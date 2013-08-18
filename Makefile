@@ -2,38 +2,42 @@
 all: test compile docs
 
 .PHONY: compile
-compile: build/genfun.min.js build/genfun.js.src
+compile: $(min-file) $(source-map)
 
-build/genfun.min.js build/genfun.js.src: build/genfun.js
-	./node_modules/uglify-js/bin/uglifyjs build/genfun.js \
-		-o build/genfun.min.js \
-		--source-map build/genfun.js.src
+uglify = ./node_modules/uglify-js/bin/uglifyjs
+min-file = build/genfun.min.js
+source-map = build/genfun.js.src
 
+$(min-file) $(source-map): build/genfun.js
+	$(uglify) build/genfun.js \
+		-o $(min-file) \
+		--source-map $(source-map)
+
+browserify = ./node_modules/browserify/bin/cmd.js
 build/genfun.js: src/*.js | build
-	./node_modules/browserify/bin/cmd.js src/genfun.js \
+	$(browserify) src/genfun.js \
 		-s Genfun \
-		-o build/genfun.js
+		-o $@
 
 build:
-	mkdir -p build
+	mkdir -p $@
 
-docs: src/*.js
-	./node_modules/jsdoc/jsdoc -d docs -c jsdoc.conf.json src/ README.md
+jsdoc  = ./node_modules/jsdoc/jsdoc
+docs: src/*.js README.md jsdoc.conf.json
+	$(jsdoc) -d $@ -c jsdoc.conf.json src/ README.md
 
 .PHONY: clean
 clean:
 	-rm -rf build
 	-rm -rf docs
 
+mocha = ./node_modules/mocha/bin/mocha \
+			--reporter spec \
+			--check-leaks
 .PHONY: test
-test:
-	./node_modules/mocha/bin/mocha \
-		--reporter spec \
-		--check-leaks
+test: src/*.js
+	$(mocha)
 
-.PHONE: watch-test
-watch-test:
-	./node_modules/mocha/bin/mocha \
-		--reporter min \
-		--check-leaks \
-		--watch
+.PHONY: watch-test
+watch-test: src/*.js
+	$(mocha) --watch
