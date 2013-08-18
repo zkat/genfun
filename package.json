@@ -1,5 +1,5 @@
 {
-  "name": "genfun.js",
+  "name": "genfun",
   "description": "Prototype-friendly multiple method dispatch for JS.",
   "homepage": "http://github.com/zkat/genfun.js",
   "keywords": ["util", "functional", "server", "client", "browser", "clos", "oop"],
