@@ -5,14 +5,19 @@
   "keywords": ["util", "functional", "server", "client", "browser", "clos", "oop"],
   "author": "Kat Marchán <kzm@sykosomatic.org>",
   "repository": {"type": "git", "url": "git://github.com/zkat/genfun.js"},
-  "main": "genfun.js",
-  "version": "0.0.1",
+  "main": "build/genfun.js",
+  "version": "0.0.0",
   "license": "CC0",
-  "files": ["Makefile", "README.md", "src/*.js"],
+  "files": ["Makefile", "README.md", "src/*.js", "build/", "docs/", "test/*.js"],
   "devDependencies": {
     "browserify": "*",
     "uglify-js": "*",
     "mocha": "*"
+  },
+  "readmeFilename": "README.md",
+  "scripts": {
+    "prepublish": "make",
+    "test": "make test"
   },
   "testling": {
     "browsers": [
