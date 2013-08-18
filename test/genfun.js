@@ -121,11 +121,11 @@ describe("Genfun", function() {
 	});
   });
   
-  describe("#addMethod()", function() {
+  describe("addMethod", function() {
 	it("defines a new method on the genfun");
   });
 
-  describe("#removeMethod()", function() {
+  describe("removeMethod", function() {
 	it("undefines a previously defined method on the genfun");
   });
 });
