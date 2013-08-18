@@ -15,6 +15,7 @@
   "devDependencies": {
     "browserify": "*",
     "uglify-js": "*",
+    "jshint": "*",
     "mocha": "*"
   },
   "readmeFilename": "README.md",
