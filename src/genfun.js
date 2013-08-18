@@ -14,7 +14,7 @@ module.exports = Genfun;
  * applied, and receives the expected binding for `this` when appropriate.
  *
  * @constructor
- * @param {object} opts - Options used when initializing the genfun.
+ * @param {object} [opts] - Options used when initializing the genfun.
  * @returns {function} New generic function.
  */
 function Genfun(opts) {
@@ -41,7 +41,7 @@ Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache will need to be bigger
  *
  * @function
  * @param {Genfun} genfun - Genfun instance to add the method to.
- * @param {array-like} participants - Objects to dispatch this method on.
+ * @param {Array} participants - Objects to dispatch this method on.
  * @param {function} methodFunction - Function to execute when the method
  *                                    successfully dispatches.
  */
