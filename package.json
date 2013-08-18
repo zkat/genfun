@@ -16,9 +16,19 @@
   },
   "testling": {
     "browsers": [
-      "ie6", "ie7", "ie8", "ie9",
-      "firefox/15", "chrome/22", "opera/12", "safari/5.1"
-    ],
+      "iexplore/8.0",
+      "iexplore/9.0",
+      "iexplore/10.0",
+      "chrome/25.0",
+      "firefox/19.0",
+      "opera/12.0",
+      "firefox/nightly",
+      "opera/next",
+      "chrome/canary",
+      "iphone/6.0",
+      "ipad/6.0",
+      "safari/6.0",
+      "android-browser/4.2"],
     "harness": "mocha",
     "files": "test/*.js"
   },
