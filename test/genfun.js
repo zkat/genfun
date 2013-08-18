@@ -107,6 +107,10 @@ describe("Genfun", function() {
 			 assert.equal("nullProto", frob(nullProto));
 		   });
 	  });
+	  describe("ToObject dispatch conversion", function() {
+		it("dispatches primitives according to their ToObject's prototypes" +
+		   " and passes the original primitive into the effective method function");
+	  });
 	  describe("0-arity dispatch", function() {
 		var frob = new Genfun();
 		Genfun.addMethod(frob, [], function(arg) { return arg; });
@@ -116,6 +120,7 @@ describe("Genfun", function() {
 			 assert.equal(val, frob(val));
 			 assert.equal(undefined, frob());
 		   });
+		it("dispatches to the empty/default method when an arg's [[Proto]] is null");
 	  });
 	  describe("multi-argument dispatch", function() {
 		it("compares all given arguments to the dispatch lists for its methods");
