@@ -132,7 +132,7 @@ function cache_args(genfun, args, methods) {
 }
 
 function cacheable_proto(genfun, arg) {
-  if (arg.hasOwnProperty(Role.role_key_name)) {
+  if (Object.hasOwnProperty.call(arg, Role.role_key_name)) {
     for (var j = 0; j < arg[Role.role_key_name].length; j++) {
       var role = arg[Role.role_key_name][j];
       if (role.method.genfun == genfun) {
@@ -177,7 +177,9 @@ function compute_applicable_methods(genfun, args) {
   args = [].slice.call(args);
   var discovered_methods = [];
   function find_and_rank_roles(object, hierarchy_position, index) {
-    var roles = object.hasOwnProperty(Role.role_key_name)?object[Role.role_key_name]:[];
+    var roles = Object.hasOwnProperty.call(object, Role.role_key_name) ?
+          object[Role.role_key_name] :
+          [];
     roles.forEach(function(role) {
       if (role.method.genfun === genfun && index === role.position) {
         if (discovered_methods.indexOf(role.method) < 0) {

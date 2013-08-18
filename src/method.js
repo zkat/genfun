@@ -32,8 +32,8 @@ function Method(genfun, participants, func) {
 
   var tmp_participants = participants.length?participants:[Object.prototype];
   for (var object, i = tmp_participants.length - 1; i >= 0; i--) {
-    object = tmp_participants.hasOwnProperty(i)?
-      tmp_participants[i]:
+    object = Object.hasOwnProperty.call(tmp_participants, i) ?
+      tmp_participants[i] :
       Object.prototype;
     if (i > 0
         && method.minimal_participants == 0
@@ -41,7 +41,7 @@ function Method(genfun, participants, func) {
       continue;
     } else {
       method.minimal_participants++;
-      if (!object.hasOwnProperty(Role.role_key_name)) {
+      if (!Object.hasOwnProperty.call(object, Role.role_key_name)) {
         if (typeof Object.defineProperty != "undefined") {
           // Object.defineProperty is JS 1.8.0+
           Object.defineProperty(
