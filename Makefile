@@ -11,8 +11,7 @@ linter = $(module-root)/jshint/bin/jshint $(linter-opts)
 #
 # Opts
 #
-mocha-opts = --reporter spec \
-				--check-leaks
+mocha-opts = --check-leaks
 linter-opts =
 
 #
@@ -33,7 +32,7 @@ readme = README.md
 # Targets
 #
 .PHONY: all
-all: lint test docs compile
+all: lint test-quiet docs compile
 
 .PHONY: compile
 compile: $(min-file) $(source-map)
@@ -60,8 +59,15 @@ clean:
 	-rm -rf $(docs-dir)
 
 .PHONY: test
-test: $(source-files)
-	$(mocha)
+test: test-spec
+
+.PHONY: test-spec
+test-spec: $(source-files)
+	$(mocha) --reporter spec
+
+.PHONY: test-quiet
+test-quiet: $(source-files)
+	$(mocha) --reporter dot
 
 .PHONY: test-watch
 test-watch: $(source-files)
