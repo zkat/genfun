@@ -59,6 +59,83 @@ describe("Genfun", function() {
 	  });
 	});
 	describe("dispatch", function() {
+	  describe("basic single dispatch", function() {
+		var frob = new Genfun(),
+			container = {frob:frob},
+			Ctr = function() {};
+		Genfun.addMethod(frob, [Ctr.prototype], function(ctr) {
+		  return {
+			arguments: arguments,
+			this: this
+		  };
+		});
+		it("dispatches methods based on the prototype of its argument", function() {
+		  var obj = new Ctr;
+		  assert.equal(obj, frob(obj).arguments[0]);
+		});
+		it("fails if there is no method defined for the given argument", function() {
+		  assert.throws(function() { return frob("nothing"); });
+		});
+		it("properly binds `this` in the method to the genfun's `this`", function() {
+		  assert.equal(container, container.frob(new Ctr).this);
+		});
+		it("dispatches the most specific method when multiple methods apply", function() {
+		  Genfun.addMethod(frob, [Object.prototype], function(obj) {
+			return "NOPE";
+		  });
+		  var obj = new Ctr;
+		  assert.equal(obj, frob(obj).arguments[0]);
+		});
+		it("can dispatch on objects where [[Proto]] is null", function() {
+		  var frob = new Genfun(),
+			  nullProto = Object.create(null);
+		  Genfun.addMethod(frob, [nullProto], function() {
+			return "nullProto";
+		  });
+		  assert.equal("nullProto", frob(nullProto));
+		});
+		it("calls noApplicableMethod correctly if [[Proto]] is null and no" +
+		   " applicable method exists for the argument", function() {
+		  var frob = new Genfun(),
+			  nullProto = Object.create(null);
+		  Genfun.addMethod(Genfun.noApplicableMethod, [frob], function() {
+			return "nullProto";
+		  });
+		  assert.equal("nullProto", frob(nullProto));
+		});
+	  });
+	  describe("0-arity dispatch", function() {
+		var frob = new Genfun();
+		Genfun.addMethod(frob, [], function(arg) { return arg; });
+		it("dispatches to a single method when only one method "
+		   +"with an empty dispatch array is defined", function() {
+			 var val = {};
+			 assert.equal(val, frob(val));
+			 assert.equal(undefined, frob());
+		   });
+	  });
+	  describe("multi-argument dispatch", function() {
+		it("compares all given arguments to the dispatch lists for its methods");
+		it("weighs methods based on the arguments' distance to dispatch prototypes");
+		it("gives greater weight to earlier arguments");
+	  });
+	  describe("variable arity dispatch", function() {
+		it("treats 'unfilled' spaces like Object.prototype when comparing " +
+		   "methods with dispatch arrays of different lengths");
+	  });
+	  it("treats empty array items (`[x, ,z]`) like Object.prototype", function() {
+		var frob = new Genfun(),
+			x = {};
+		Genfun.addMethod(frob, [x, ,x], function(a, b, c) {
+		  return "3-arg method";
+		});
+		Genfun.addMethod(frob, [], function() {
+		  return "0-arg method";
+		});
+		assert.equal("3-arg method", frob(x, x, x));
+		assert.equal("3-arg method", frob(x, {}, x));
+		assert.equal("0-arg method", frob(x, Object.create(null), x));
+	  });
 	  it("properly dispatches methods", function() {
 		var frobnicate = new Genfun(),
 			addMethod = Genfun.addMethod;
@@ -123,9 +200,18 @@ describe("Genfun", function() {
   
   describe("addMethod", function() {
 	it("defines a new method on the genfun");
+	it("can define methods that dispatch on objects with null [[Proto]]", function() {
+	  var frob = new Genfun(),
+		  nullProto = Object.create(null);
+	  Genfun.addMethod(frob, [nullProto, nullProto], function() {
+		return "success";
+	  });
+	  assert.equal("success", frob(nullProto, nullProto));
+	});
   });
 
   describe("removeMethod", function() {
 	it("undefines a previously defined method on the genfun");
+	it("can remove methods that dispatch on objects with null [[Proto]]");
   });
 });
