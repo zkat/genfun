@@ -16,6 +16,7 @@
   },
   "testling": {
     "browsers": [
+      "iexplore/7.0",
       "iexplore/8.0",
       "iexplore/9.0",
       "iexplore/10.0",
