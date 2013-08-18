@@ -30,3 +30,10 @@ test:
 	./node_modules/mocha/bin/mocha \
 		--reporter spec \
 		--check-leaks
+
+.PHONE: watch-test
+watch-test:
+	./node_modules/mocha/bin/mocha \
+		--reporter min \
+		--check-leaks \
+		--watch
