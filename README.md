@@ -66,12 +66,3 @@ capabilities in a prototype-friendly way. Inspired by
 'prototype-friendly' means that it doesn't keep references from methods to
 objects, so they will be garbage collected normally even if a method has
 been directly defined on them.
-
-### Notes
-
-Right now, `genfun.js` is mainly a proof of concept and porting of old Sheeple
-code. No real optimization has been done on dispatch, so you can expect it
-to crawl under any real strain. Once optimized, the system would ideally be
-just as fast as a singly-dispatched system when only one argument is
-specialized, while still providing the flexibility to dispatch on multiple
-arguments when desired.
