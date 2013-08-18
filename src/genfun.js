@@ -74,9 +74,9 @@ Genfun.removeMethod = function(genfun, participants) {
  * applicable method was found. The default method throws an `Error`.
  *
  * @function
- * @param {genfun} genfun - Generic function instance that was called.
+ * @param {Genfun} genfun - Generic function instance that was called.
  * @param {*} newthis - value of `this` the genfun was called with.
- * @param {...*} [callArgs] - Arguments the genfun was called with.
+ * @param {Array} callArgs - Arguments the genfun was called with.
  */
 Genfun.noApplicableMethod = new Genfun();
 Genfun.addMethod(Genfun.noApplicableMethod, [], function() {
@@ -91,8 +91,8 @@ function apply_genfun(genfun, newthis, args) {
   if (applicable_methods.length) {
     return applicable_methods[0].func.apply(newthis, args);
   } else {
-    return Genfun.noApplicableMethod.apply(
-      Genfun, [genfun._wrapper_function, newthis].concat([].slice.call(args)));
+    return Genfun.noApplicableMethod.call(
+      Genfun, genfun._wrapper_function, newthis, args);
   }
 };
 
