@@ -144,16 +144,16 @@ function cache_args(genfun, args, methods) {
 }
 
 function cacheable_proto(genfun, arg) {
-  if (arg === null) return;
-  if (Object.hasOwnProperty.call(arg, Role.role_key_name)) {
-    for (var j = 0; j < arg[Role.role_key_name].length; j++) {
-      var role = arg[Role.role_key_name][j];
+  var dispatchable = dispatchable_object(arg);
+  if (Object.hasOwnProperty.call(dispatchable, Role.role_key_name)) {
+    for (var j = 0; j < dispatchable[Role.role_key_name].length; j++) {
+      var role = dispatchable[Role.role_key_name][j];
       if (role.method.genfun === genfun) {
-        return;
+        return undefined;
       }
     }
   }
-  return Object.getPrototypeOf(dispatchable_object(arg));
+  return Object.getPrototypeOf(dispatchable);
 }
 
 function cached_methods(genfun, args) {
