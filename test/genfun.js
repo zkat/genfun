@@ -13,6 +13,16 @@ describe("Genfun", function() {
       // TODO - Not currently possible in JS
       // assert.equal(true, (new Genfun) instanceof Genfun);
     });
+    it("calls noApplicableMethod if called without adding methods", function() {
+      var frob = new Genfun();
+      assert.throws(frob, function(err) {
+        return err.message === "No applicable method";
+      });
+      Genfun.addMethod(Genfun.noApplicableMethod, [frob], function() {
+        return "success";
+      });
+      assert.equal("success", frob());
+    });
   });
 
   describe("noApplicableMethod", function() {
