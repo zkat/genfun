@@ -141,8 +141,9 @@ describe("Genfun", function() {
            });
       });
       describe("ToObject dispatch conversion", function() {
-        it("dispatches primitives according to their ToObject's prototypes" +
-           " and passes the original primitive into the effective method function");
+        it("dispatches primitives according to their ToObject's prototypes");
+        it("passes the original primitive into the effective method function");
+        it("works on booleans, numbers, and strings");
       });
       describe("Object.prototype empty-index shorthand", function () {
         var frob = new Genfun();
@@ -290,6 +291,7 @@ describe("Genfun", function() {
                    Genfun.addMethod(frob, [], function() { return "yup"; }).genfun);
       assert.equal("yup", frob(Object.create(null)));
     });
+    it("errors if any of the arguments given are primitives");
   });
 
   describe("removeMethod", function() {
