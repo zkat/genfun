@@ -21,6 +21,7 @@ main-file = src/genfun.js
 source-files = src/*.js
 build-dir = build
 docs-dir = docs
+examples-dir = examples
 browserify-bundle = $(build-dir)/genfun.js
 min-file = $(build-dir)/genfun.min.js
 source-map = $(build-dir)/genfun.js.src
@@ -76,3 +77,7 @@ test-watch: $(source-files)
 .PHONY: lint
 lint: $(source-files) $(linter-config)
 	$(linter) --config $(linter-config) $(source-files)
+
+.PHONY: example-%
+example-%: | $(examples-dir)/*.js
+	node examples/$*.js

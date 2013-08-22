@@ -77,3 +77,5 @@ function runExample() {
 
 exports.runExample = runExample;
 exports.fmap = fmap;
+
+if (module.id === ".") runExample();
