@@ -1,7 +1,8 @@
 /* -*- js2-basic-offset: 2; indent-tabs-mode: nil; -*- */
-var gf = require("../build/genfun");
+var Genfun = require("../build/genfun"),
+	addMethod = Genfun.addMethod;
 
-var fmap = new gf;
+var fmap = new Genfun;
 
 /*
  * Maybe
@@ -11,17 +12,17 @@ function Just(value) {
 }
 var Nothing = {};
 
-gf.addMethod(fmap, [Function.prototype, Just.prototype], function(f, just) {
+addMethod(fmap, [Function.prototype, Just.prototype], function(f, just) {
 	return new Just(f.call(this, just.value));
 });
-gf.addMethod(fmap, [Function.prototype, Nothing], function() {
+addMethod(fmap, [Function.prototype, Nothing], function() {
 	return Nothing;
 });
 
 /*
  * Array
  */
-gf.addMethod(fmap, [Function.prototype, Array.prototype], function(f, array) {
+addMethod(fmap, [Function.prototype, Array.prototype], function(f, array) {
 	return array.map(f, this);
 });
 
@@ -36,10 +37,10 @@ function Branch(left, right) {
 	this.right = right;
 }
 
-gf.addMethod(fmap, [Function.prototype, Leaf.prototype], function(f, leaf) {
+addMethod(fmap, [Function.prototype, Leaf.prototype], function(f, leaf) {
 	return new Leaf(f.call(this, leaf.value));
 });
-gf.addMethod(fmap, [Function.prototype, Branch.prototype], function(f, branch) {
+addMethod(fmap, [Function.prototype, Branch.prototype], function(f, branch) {
 	return new Branch(f.call(this, branch.left), f.call(this, branch.right));
 });
 
