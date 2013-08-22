@@ -2,22 +2,42 @@
   "name": "genfun",
   "description": "Prototype-friendly multiple method dispatch for JS.",
   "homepage": "http://github.com/zkat/genfun.js",
-  "keywords": ["util", "functional", "server", "client", "browser", "clos", "oop"],
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser",
+    "clos",
+    "oop"
+  ],
   "author": "Kat Marchán <kzm@sykosomatic.org>",
-  "repository": {"type": "git", "url": "git://github.com/zkat/genfun.js"},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zkat/genfun.js"
+  },
   "main": "build/genfun.js",
   "version": "0.0.0",
-  "licenses": [{
-    "type": "CC0",
-    "url": "https://creativecommons.org/publicdomain/zero/1.0/"
-  }],
-  "files": ["Makefile", "README.md", "src/*.js", "build/", "docs/", "test/*.js"],
+  "licenses": [
+    {
+      "type": "CC0",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  ],
+  "files": [
+    "Makefile",
+    "README.md",
+    "src/*.js",
+    "build/",
+    "docs/",
+    "test/*.js"
+  ],
   "devDependencies": {
-    "browserify": "*",
-    "uglify-js": "*",
-    "jsdoc": "*",
-    "jshint": "*",
-    "mocha": "*"
+    "browserify": "~2.28.0",
+    "uglify-js": "~2.3.6",
+    "jsdoc": "~3.2.0",
+    "jshint": "~2.1.10",
+    "mocha": "~1.12.0"
   },
   "readmeFilename": "README.md",
   "scripts": {
@@ -39,7 +59,8 @@
       "iphone/6.0",
       "ipad/6.0",
       "safari/6.0",
-      "android-browser/4.2"],
+      "android-browser/4.2"
+    ],
     "harness": "mocha",
     "files": "test/*.js"
   }
