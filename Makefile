@@ -79,5 +79,5 @@ lint: $(source-files) $(linter-config)
 	$(linter) --config $(linter-config) $(source-files)
 
 .PHONY: example-%
-example-%: | $(examples-dir)/*.js
+example-%: $(examples-dir)/*.js $(browserify-bundle)
 	node examples/$*.js
