@@ -87,7 +87,7 @@
    Right now, all arguments across the arglist are scored evenly. Consider
    making items earlier in the arglist have greater weight in the scoring
    algorithm.
-* active [3/17]
+* active [4/19]
 ** DONE Write an fmap example file                                     :meta:
    CLOSED: [2013-08-21 Wed 23:38]
 ** DONE Write an example that shows off namespaced methods             :meta:
@@ -98,6 +98,10 @@
    message. It should at least be its own exception with a more
    informative message (probably including the things that you tried to
    dispatch against) for clarity.
+** DONE Release on bower                                            :release:
+   CLOSED: [2013-08-22 Thu 02:01]
+   Bower is for releasing frontend code, and this thing can be used in the
+   frontend so...
 ** TODO Write an example that shows off OO design stuff                :meta:
 ** TODO Figure out selling points                                      :meta:
    Figure out what would get people interested in genfun.js
@@ -119,9 +123,6 @@
     Like writing things functionally? Wish you had something like
     typeclasses? genfun can do that.
 ** TODO Write up a better README that quickly sells genfun.js up       :meta:
-** TODO Release on bower                                            :release:
-   Bower is for releasing frontend code, and this thing can be used in the
-   frontend so...
 ** TODO Fill in pending tests                                          :test:
 ** TODO More fine-grained dispatch tests                               :test:
    Right now, dispatch testing is covered by a single big blob of
@@ -155,3 +156,6 @@
 ** TODO make release target                                         :release:
    Add make release to the Makefile. Should do a test, git tag, and push
    out to npm.
+** TODO Warn when overriding an existing method                     :feature:
+** TODO Write a protocol utility using genfun.js                    :feature:
+   Perhaps something that can be automatically tested.
