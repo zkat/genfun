@@ -87,7 +87,41 @@
    Right now, all arguments across the arglist are scored evenly. Consider
    making items earlier in the arglist have greater weight in the scoring
    algorithm.
-* active [0/9]
+* active [3/17]
+** DONE Write an fmap example file                                     :meta:
+   CLOSED: [2013-08-21 Wed 23:38]
+** DONE Write an example that shows off namespaced methods             :meta:
+   CLOSED: [2013-08-22 Thu 01:37]
+** DONE Better No Applicable Method error                           :feature:
+   CLOSED: [2013-08-22 Thu 01:37]
+   When you get a dispatch error, it just bloody crashes with a
+   message. It should at least be its own exception with a more
+   informative message (probably including the things that you tried to
+   dispatch against) for clarity.
+** TODO Write an example that shows off OO design stuff                :meta:
+** TODO Figure out selling points                                      :meta:
+   Figure out what would get people interested in genfun.js
+*** Namespacing for methods
+    Extend standard prototypes without worrying about littering them or
+    conflicting with external libraries! Methods belong to genfuns, not to
+    the objects they dispatch on.
+*** Multiple dispatch for JS
+*** Dispatch without `this`
+    Free yourself from `this`, but use it if you really want. You don't
+    need it for dynamic dispatch, though!
+*** Think with protocols
+    Stop worrying about what things "are", or what methods they "have" --
+    write your code expecting regular functions' arguments to simply work
+    when you call a certain function on them. If you need different
+    behavior for different functions, define a genfun then and only then,
+    and leave all callsites untouched.
+*** Seamless integration with functional code
+    Like writing things functionally? Wish you had something like
+    typeclasses? genfun can do that.
+** TODO Write up a better README that quickly sells genfun.js up       :meta:
+** TODO Release on bower                                            :release:
+   Bower is for releasing frontend code, and this thing can be used in the
+   frontend so...
 ** TODO Fill in pending tests                                          :test:
 ** TODO More fine-grained dispatch tests                               :test:
    Right now, dispatch testing is covered by a single big blob of
@@ -98,6 +132,9 @@
 ** TODO split test/genfun.js into multiple files                       :test:
    It's starting to be a bit of an overwhelming blob of text.
 ** TODO Consider using something other than assert for tests           :test:
+** TODO Allow ability to add name in Genfun constructor             :feature:
+   Named functions are easier to debug. A name option to the constructor
+   would make this a bit nicer.
 ** TODO Improve docs with a tutorial or explanation                    :docs:
    Right now, there's a quickstart and some light API docs. Figure out how
    to best explain what genfun.js does and how to use it.
