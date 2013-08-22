@@ -26,6 +26,15 @@ var Genfun = require("../build/genfun"),
 var fmap = new Genfun;
 
 /*
+ * Default method
+ */
+addMethod(fmap, [], function(f, value) {
+  throw new Error("No instance of (Functor " +
+                  Object.prototype.toString.call(value) + ")" +
+                  " arising from use of `fmap'");
+});
+
+/*
  * Maybe
  */
 function Just(value) {
@@ -75,7 +84,7 @@ function runExample() {
   console.log("Testing Maybe");
   fmap(logValue("Just"), new Just(123));
   fmap(logValue("Nothing"), Nothing);
-  
+
   console.log("Testing Array");
   fmap(logValue("Array"), [1,2,3]);
 
@@ -94,6 +103,13 @@ function runExample() {
                lf(4),
                lf(5))),
            lf(6))));
+
+  console.log("Testing default");
+  try {
+    fmap(logValue("Fail"), "Some random string");
+  } catch(e) {
+    console.log("Caught exception: ", e);
+  }
 }
 
 exports.runExample = runExample;
