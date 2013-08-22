@@ -83,12 +83,12 @@ function runExample() {
   }
 
   console.log("Testing Maybe");
-  fmap(logValue("Just"), new Just(123));
+  fmap(logValue("Just"), new Just(1));
   fmap(logValue("Nothing"), Nothing);
-
+  console.log("-----------------");
   console.log("Testing Array");
   fmap(logValue("Array"), [1,2,3]);
-
+  console.log("-----------------");
   console.log("Testing Tree");
   function br(a, b) { return new Branch(a, b); }
   function lf(x) { return new Leaf(x); }
@@ -104,7 +104,7 @@ function runExample() {
                lf(4),
                lf(5))),
            lf(6))));
-
+  console.log("-----------------");
   console.log("Testing default");
   try {
     fmap(logValue("Fail"), "Some random string");
