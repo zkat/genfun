@@ -71,7 +71,8 @@ addMethod(fmap, [Function.prototype, Leaf.prototype], function(f, leaf) {
   return new Leaf(f.call(this, leaf.value));
 });
 addMethod(fmap, [Function.prototype, Branch.prototype], function(f, branch) {
-  return new Branch(f.call(this, branch.left), f.call(this, branch.right));
+  return new Branch(fmap.call(this, f, branch.left),
+                    fmap.call(this, f, branch.right));
 });
 
 function runExample() {
