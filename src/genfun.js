@@ -91,8 +91,16 @@ Genfun.removeMethod = function() {
  * @param {Array} callArgs - Arguments the genfun was called with.
  */
 Genfun.noApplicableMethod = new Genfun();
-Genfun.addMethod(Genfun.noApplicableMethod, [], function() {
-  throw new Error("No applicable method");
+Genfun.addMethod(Genfun.noApplicableMethod, [], function(genfun, thisArg, args) {
+  var msg = "No applicable method found when called with arguments of types: (" +
+        [].map.call(args, function(arg) {
+          return /\[object ([a-zA-Z0-9]+)\]/.exec(({}).toString.call(arg))[1];
+        }).join(", ") + ")",
+      err = new Error(msg);
+  err.genfun = genfun;
+  err.thisArg = thisArg;
+  err.args = args;
+  throw err;
 });
 
 /*

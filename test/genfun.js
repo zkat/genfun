@@ -14,9 +14,11 @@ describe("Genfun", function() {
       // assert.equal(true, (new Genfun) instanceof Genfun);
     });
     it("calls noApplicableMethod if called without adding methods", function() {
-      var frob = new Genfun();
+      var frob = new Genfun(),
+          data = [1, 2, 3];
       assert.throws(frob, function(err) {
-        return err.message === "No applicable method";
+        return err.message === "No applicable method found when called " +
+          "with arguments of types: ()";
       });
       Genfun.addMethod(Genfun.noApplicableMethod, [frob], function() {
         return "success";
@@ -27,9 +29,30 @@ describe("Genfun", function() {
 
   describe("noApplicableMethod", function() {
     var frob = new Genfun(),
-        container = { frob: frob };
+        container = { frob: frob },
+        data = [1, 2, 3];
     it("throws an exception if there is no applicable method", function() {
       assert.throws(frob, function(err) { return err instanceof Error; });
+    });
+    it("includes the types of the inputs in the message", function() {
+      assert.throws(function() { frob(data); }, function(err) {
+        return err.message === "No applicable method found when called " +
+          "with arguments of types: (Array)";
+      });
+      assert.throws(function() { frob({}); }, function(err) {
+        return err.message === "No applicable method found when called " +
+          "with arguments of types: (Object)";
+      });
+    });
+    it("includes the original call arguments in the Error instance", function() {
+      assert.throws(function() { frob(data); }, function(err) {
+        return err.args.length === 1 && err.args[0] === data;
+      });
+    });
+    it("includes the `this` argument in the Error instance", function() {
+      assert.throws(function() { frob.call(data); }, function(err) {
+        return err.thisArg === data;
+      });
     });
     it("can be modified so something different happens if dispatch fails", function() {
       Genfun.addMethod(Genfun.noApplicableMethod, [frob], function() {
