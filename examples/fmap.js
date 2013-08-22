@@ -109,7 +109,7 @@ function runExample() {
   try {
     fmap(logValue("Fail"), "Some random string");
   } catch(e) {
-    console.log("Caught exception: ", e);
+    console.log("Caught expected exception: ", e);
   }
 }
 
