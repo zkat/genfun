@@ -2,6 +2,27 @@
 var Genfun = require("../build/genfun"),
     addMethod = Genfun.addMethod;
 
+/*
+ * This file implements an approximation of the Functor instances described
+ * in the Haskell wikibook:
+ *
+ * https://en.wikibooks.org/wiki/Haskell/The_Functor_class
+ */
+
+/**
+ * Generic function used in the Functor typeclass we're simulating in this
+ * file. The typeclass can be instantiated by simply adding the appropriate
+ * methods to fmap, which follow the Functor laws:
+ *
+ * `fmap(identity, value) => value`
+ * `fmap(compose(f, g), value) => f(g(value))`
+ *
+ * And for the sake of JavaScript's `this` we add an additional expectation:
+ * `thing.fmap(function() { return this; }, value) => thing`
+ *
+ * @param {function} f - Function to map over the value.
+ * @param {*} value - Value to map over.
+ */
 var fmap = new Genfun;
 
 /*
