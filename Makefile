@@ -1,4 +1,3 @@
-VERSION := `git describe --tags --abbrev=0`
 #
 # Binaries
 #
@@ -40,17 +39,11 @@ all: lint test-quiet docs compile
 .PHONY: compile
 compile: $(min-file) $(source-map)
 
-.PHONY: release-% release-patch release-minor release-major
+.PHONY: release-%
 release-%: all
-	@if [ -n "`git diff`" ]; then \
-		echo "\n!!!!!!! Can't release with a diff in the repo !!!!!!!!\n"; \
-		exit 1; \
-	fi
-	VERSION="$(VERSION)" ; \
-	NEXTVER="`$(semver) $$VERSION -i $*`" ; \
+	npm version $* -m "Upgrading genfun.js to %s" ;
 	git checkout master ; \
-	git merge --no-ff develop -m "Releasing genfun.js v$$NEXTVER" --allow-empty ; \
-	git tag "$$NEXTVER" -m "Releasing genfun.js v$$NEXTVER" ; \
+	git merge develop --ff-only ; \
 	git checkout develop
 
 $(min-file) $(source-map): $(browserify-bundle)
