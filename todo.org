@@ -1,4 +1,4 @@
-* archive [19/19]
+* archive [26/26]
 ** DONE Write a package.json file                             :build:release:
    CLOSED: [2013-08-17 Sat 11:05]
 ** DONE Add build system                                              :build:
@@ -59,6 +59,32 @@
    CLOSED: [2013-08-18 Sun 12:37]
 ** DONE Fix null object error when calling a fresh genfun               :bug:
    CLOSED: [2013-08-18 Sun 14:08]
+** DONE Write an fmap example file                                     :meta:
+   CLOSED: [2013-08-21 Wed 23:38]
+** DONE Write an example that shows off namespaced methods             :meta:
+   CLOSED: [2013-08-22 Thu 01:37]
+** DONE Better No Applicable Method error                           :feature:
+   CLOSED: [2013-08-22 Thu 01:37]
+   When you get a dispatch error, it just bloody crashes with a
+   message. It should at least be its own exception with a more
+   informative message (probably including the things that you tried to
+   dispatch against) for clarity.
+** DONE Release on bower                                            :release:
+   CLOSED: [2013-08-22 Thu 02:01]
+   Bower is for releasing frontend code, and this thing can be used in the
+   frontend so...
+** DONE make release target                                         :release:
+   CLOSED: [2013-08-23 Fri 19:35]
+   Add make release to the Makefile. Should do a test, git tag, and push
+   out to npm.
+** DONE Move basic example to examples/ and replace with simpler one   :meta:
+   CLOSED: [2013-08-24 Sat 10:04]
+   Write a shorter one for the README
+** DONE Write an example that shows off OO design stuff                :meta:
+   CLOSED: [2013-08-24 Sat 10:04]
+   Probably the best thing to do here is to pick a module that's already
+   written in OO style and rewrite it to show the different. Maybe
+   something like todomvc has a tiny example I can base it on?
 * backlog [0/13]
 ** TODO Use partial dispatch trick                             :optimization:
 ** TODO Cache effective method function                        :optimization:
@@ -87,22 +113,9 @@
    Right now, all arguments across the arglist are scored evenly. Consider
    making items earlier in the arglist have greater weight in the scoring
    algorithm.
-* active [4/19]
-** DONE Write an fmap example file                                     :meta:
-   CLOSED: [2013-08-21 Wed 23:38]
-** DONE Write an example that shows off namespaced methods             :meta:
-   CLOSED: [2013-08-22 Thu 01:37]
-** DONE Better No Applicable Method error                           :feature:
-   CLOSED: [2013-08-22 Thu 01:37]
-   When you get a dispatch error, it just bloody crashes with a
-   message. It should at least be its own exception with a more
-   informative message (probably including the things that you tried to
-   dispatch against) for clarity.
-** DONE Release on bower                                            :release:
-   CLOSED: [2013-08-22 Thu 02:01]
-   Bower is for releasing frontend code, and this thing can be used in the
-   frontend so...
-** TODO Write an example that shows off OO design stuff                :meta:
+* active [0/14]
+** TODO Try having the type spec as the third argument to addMethod     :api:
+   Functions get annoyingly indented otherwise.
 ** TODO Figure out selling points                                      :meta:
    Figure out what would get people interested in genfun.js
 *** Namespacing for methods
@@ -153,9 +166,6 @@
 ** TODO Implement a PIC                                        :optimization:
    https://en.wikipedia.org/wiki/Inline_caching#Polymorphic_inline_caching
    How the hell can you do that with JS without a preprocessor?
-** TODO make release target                                         :release:
-   Add make release to the Makefile. Should do a test, git tag, and push
-   out to npm.
 ** TODO Warn when overriding an existing method                     :feature:
 ** TODO Write a protocol utility using genfun.js                    :feature:
    Perhaps something that can be automatically tested.
