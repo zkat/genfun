@@ -3,7 +3,7 @@
 /*jshint newcap:false */
 /*
  * Based on
- * https://github.com/tastejs/todomvc/blob/gh-pages/labs/dependency-examples/canjs_require/js/models/todo.js
+ * https://github.com/tastejs/todomvc/blob/gh-pages/labs/dependency-examples/canjs_require/js/controls/todos.js
  */
 define([
   'genfun',
