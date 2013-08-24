@@ -1,3 +1,4 @@
+VERSION := `git describe --tags --abbrev=0`
 #
 # Binaries
 #
@@ -7,6 +8,7 @@ browserify = $(module-root)/browserify/bin/cmd.js
 jsdoc = $(module-root)/jsdoc/jsdoc
 mocha = $(module-root)/mocha/bin/mocha $(mocha-opts)
 linter = $(module-root)/jshint/bin/jshint $(linter-opts)
+semver = $(module-root)/semver/bin/semver
 
 #
 # Opts
@@ -37,6 +39,19 @@ all: lint test-quiet docs compile
 
 .PHONY: compile
 compile: $(min-file) $(source-map)
+
+.PHONY: release-% release-patch release-minor release-major
+release-%: all
+	@if [ -n "`git diff`" ]; then \
+		echo "\n!!!!!!! Can't release with a diff in the repo !!!!!!!!\n"; \
+		exit 1; \
+	fi
+	VERSION="$(VERSION)" ; \
+	NEXTVER="`$(semver) $$VERSION -i $*`" ; \
+	git checkout master ; \
+	git merge --no-ff develop -m "Releasing genfun.js v$$NEXTVER" --allow-empty ; \
+	git tag "$$NEXTVER" -m "Releasing genfun.js v$$NEXTVER" ; \
+	git checkout develop
 
 $(min-file) $(source-map): $(browserify-bundle)
 	$(uglify) $(browserify-bundle) \
