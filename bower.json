@@ -5,7 +5,7 @@
     "Kat Marchán <kzm@sykosomatic.org>"
   ],
   "description": "Prototype-friendly multiple method dispatch for JS.",
-  "main": "build/genfun.js",
+  "main": "src/genfun.js",
   "keywords": [
     "util",
     "functional",
