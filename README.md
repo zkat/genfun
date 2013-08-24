@@ -12,55 +12,59 @@ free to do whatever you want with it.
 
 ### Install
 
-`$ npm install genfun.js`
+`genfun.js` is available through both [NPM](http://npmjs.org) and
+[Bower](http://bower.io) as `genfun`.
+
+`$ npm install genfun`
+or
+`$ bower install genfun`
+
+The `npm` version includes a build/ directory with pre-built and
+pre-minified UMD versions of `genfun.js` which are loadable by both AMD and
+CommonJS module systems. To generate these files in `bower`, or if you
+fetched `genfun.js` from source, simply run:
+
+```
+$ npm install
+...dev dependencies installed...
+$ make
+```
 
 ### Example
 
+Various examples are availble to look at in the examples/ folder included
+in this project. Most examples are also runnable with node, or by just
+doing `make example-<name>` (for example, `make example-fmap`).
+
 ```javascript
+// Based on examples/hellodog.js
+var Genfun = require("genfun"),
+    addMethod = Genfun.addMethod;
+
+function Person() {}
+function Dog() {}
 
 var frobnicate = new Genfun();
+addMethod(frobnicate, [Person.prototype], function(person) {
+  console.log("Got a person!");
+});
 
-Genfun.addMethod(frobnicate,
-    [String.prototype, Number.prototype],
-    function(string, number) {
-        console.log("Got a string and a number");
-    });
+addMethod(frobnicate, [Dog.prototype], function(dog) {
+  console.log("Got a dog!");
+});
 
-Genfun.addMethod(frobnicate,
-    [Number.prototype, String.prototype],
-    function(number, string) {
-        console.log("Got a number and a string");
-    });
+addMethod(
+  frobnicate,
+  [String.prototype, Person.prototype, Dog.prototype],
+  function(greeting, person, dog) {
+    console.log(person, " greets ", dog, ", '"+greeting+"'");
+  });
 
-/* Genfun can handle multiple-arity dispatch. Any extra arguments will be
-   ranked as if the position had been specialized on Object.prototype */
-Genfun.addMethod(frobnicate,
-    [Number.prototype], // Equivalent to [Number.prototype, Object.prototype]
-            // when called with two arguments.
-    function(number) {
-        console.log("Got a single number.");
-    });
-
-/* multi-arity dispatch can be exploited to define a 'default' methods */
-Genfun.addMethod(frobnicate,
-    [],
-    function() {
-        console.log("Dispatch fell through to the default method.");
-    });
-
-/* Empty positions in the dispatch spec will be treated as Object.prototype */
-Genfun.addMethod(frobnicate,
-    [Number.prototype, , Boolean.prototype],
-    function(a, b, c) {
-        console.log("Got a number, ", b, ", and a boolean");
-    });
-
-frobnicate(new String("foo"), new Number(1)); // => Got a string and a number
-frobnicate(1, "foo"); // => Got a number and a string
-frobnicate(1); // => Got a single number
-frobnicate(1, 1); // => Got a single number
-frobnicate(true); // => Dispatch fell through
-frobnicate(1, [], true); // => Got a number, [], and a boolean
+var person = new Person(),
+    dog = new Dog();
+frobnicate(person); // Got a person!
+frobnicate(dog); // Got a dog!
+frobnicate("Hi, dog!", person, dog); // {} greets {}, 'Hi, dog!'
 
 ```
 
@@ -76,4 +80,3 @@ capabilities in a prototype-friendly way. Inspired by
 'prototype-friendly' means that it doesn't keep references from methods to
 objects, so they will be garbage collected normally even if a method has
 been directly defined on them.
-
