@@ -7,9 +7,19 @@
  * Object.prototype !== the one inside this closure, so we tag it
  * here and use that for comparisons.
  */
-Object.prototype.___isobjectproto___ = true;
+var prototest_key_name =
+      "__" + Math.random().toString(36).substr(2) + "_is_object_proto__",
+    hasDefineProperty = !!Object.defineProperty;
+
+if (hasDefineProperty) {
+  Object.defineProperty(
+    Object.prototype,
+    prototest_key_name,
+    {value: true, enumerable: false});
+}
 function is_object_proto(obj) {
-  return Object.hasOwnProperty.call(obj, "___isobjectproto___");
+  return !hasDefineProperty ||
+    Object.hasOwnProperty.call(obj, prototest_key_name);
 }
 
 exports.is_object_proto = is_object_proto;
