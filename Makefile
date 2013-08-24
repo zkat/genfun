@@ -46,6 +46,12 @@ release-%: all
 	git merge develop --ff-only ; \
 	git checkout develop
 
+.PHONY: publish
+publish:
+	git push
+	git push --tags
+	npm publish .
+
 $(min-file) $(source-map): $(browserify-bundle)
 	$(uglify) $(browserify-bundle) \
 		-o $(min-file) \
