@@ -16,7 +16,7 @@
     "type": "git",
     "url": "git://github.com/zkat/genfun.js"
   },
-  "main": "build/genfun.js",
+  "main": "src/genfun.js",
   "version": "0.0.1",
   "licenses": [
     {
