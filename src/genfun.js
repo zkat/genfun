@@ -104,16 +104,56 @@ Genfun.addMethod(Genfun.noApplicableMethod, [], function(gf, thisArg, args) {
   throw err;
 });
 
+var _current_applicable_methods,
+    _current_genfun,
+    _current_this,
+    _current_args;
+function hasNextMethod() {
+  if (typeof _current_applicable_methods === "undefined") {
+    throw new Error("hasNextMethod and callNextMethod must "+
+                    "be called inside a Genfun method.");
+  } else {
+    return !!_current_applicable_methods.length;
+  }
+}
+Genfun.hasNextMethod = hasNextMethod;
+
+function callNextMethod() {
+  if (hasNextMethod()) {
+    _current_args = arguments.length ? arguments : _current_args;
+    _current_applicable_methods = [].slice.call(_current_applicable_methods, 1);
+    return _current_applicable_methods[0].func.apply(_current_this, _current_args);
+  } else {
+    return noNextMethod();
+  }
+}
+Genfun.callNextMethod = callNextMethod;
+
+function noNextMethod() {
+  throw new Error("No next method available");
+}
+Genfun.noNextMethod = noNextMethod;
+
 /*
  * Internal
  */
 function apply_genfun(genfun, newthis, args) {
-  var applicable_methods = get_applicable_methods(genfun, args);
+  var applicable_methods = get_applicable_methods(genfun, args),
+      ret, tmp_current_methods, tmp_this, tmp_args;
   if (applicable_methods.length) {
-    return applicable_methods[0].func.apply(newthis, args);
+    tmp_current_methods = _current_applicable_methods;
+    tmp_this = _current_this;
+    tmp_args = _current_args;
+    _current_applicable_methods = applicable_methods;
+    _current_this = newthis;
+    _current_args = args;
+    ret = applicable_methods[0].func.apply(newthis, args);
+    _current_applicable_methods = tmp_current_methods;
+    _current_this = tmp_this;
+    _current_args = tmp_args;
+    return ret;
   } else {
-    return Genfun.noApplicableMethod.call(
-      Genfun, genfun._wrapper_function, newthis, args);
+    return Genfun.noApplicableMethod(genfun._wrapper_function, newthis, args);
   }
 }
 
