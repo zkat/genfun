@@ -39,23 +39,23 @@ Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache needs to be bigger.
  *
  * @function
  * @param {Genfun} genfun - Genfun instance to add the method to.
- * @param {Array-like} participants - Objects to dispatch this method on.
+ * @param {Array-like} selector - Selector array for dispatching the method.
  * @param {Function} methodFunction - Function to execute when the method
  *                                    successfully dispatches.
  */
-Genfun.addMethod = function(genfun, participants, func) {
+Genfun.addMethod = function(genfun, selector, func) {
   genfun = typeof genfun === "function" &&
     genfun.genfun &&
     genfun.genfun instanceof Genfun ?
     genfun.genfun : genfun;
-  if (participants.length) {
-    participants = [].slice.call(participants);
-    for (var i = 0; i < participants.length; i++) {
-      if (!participants.hasOwnProperty(i)) {
-        participants[i] = Object.prototype;
+  if (selector.length) {
+    selector = [].slice.call(selector);
+    for (var i = 0; i < selector.length; i++) {
+      if (!selector.hasOwnProperty(i)) {
+        selector[i] = Object.prototype;
       }
     }
-    var method = new Method(genfun, participants, func);
+    var method = new Method(genfun, selector, func);
     genfun.methods.push(method);
     genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
     return method;
@@ -70,11 +70,11 @@ Genfun.addMethod = function(genfun, participants, func) {
 
 /**
  * Removes a previously-defined method on `genfun` that matches
- * `participants` exactly.
+ * `selector` exactly.
  *
  * @function
  * @param {Genfun} genfun - Genfun to remove a method from.
- * @param {Array-like} participants - Objects to match on when finding a
+ * @param {Array-like} selector - Objects to match on when finding a
  *                                    method to remove.
  */
 Genfun.removeMethod = function() {
@@ -217,7 +217,7 @@ function compute_applicable_methods(genfun, args) {
     // on Object.prototype.
     if (util.is_object_proto(object)) {
       discovered_methods.forEach(function(method) {
-        if (method.minimal_participants <= index) {
+        if (method.minimal_selector <= index) {
           Method.set_rank_hierarchy_position(
             method, index, hierarchy_position);
         }
