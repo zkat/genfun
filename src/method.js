@@ -20,27 +20,27 @@
 var Role = require("./role"),
     util = require("./util");
 
-function Method(genfun, participants, func) {
+function Method(genfun, selector, func) {
   var method = this;
   method.genfun = genfun;
   method.func = func;
   method._rank = [];
-  method.minimal_participants = 0;
+  method.minimal_selector = 0;
 
   // TODO: The following is false in Firefox:
   // console.log(window.objproto == Object.prototype);
 
-  var tmp_participants = participants.length?participants:[Object.prototype];
-  for (var object, i = tmp_participants.length - 1; i >= 0; i--) {
-    object = Object.hasOwnProperty.call(tmp_participants, i) ?
-      tmp_participants[i] :
+  var tmp_selector = selector.length?selector:[Object.prototype];
+  for (var object, i = tmp_selector.length - 1; i >= 0; i--) {
+    object = Object.hasOwnProperty.call(tmp_selector, i) ?
+      tmp_selector[i] :
       Object.prototype;
     if (i > 0 &&
-        !method.minimal_participants &&
+        !method.minimal_selector &&
         util.is_object_proto(object)) {
       continue;
     } else {
-      method.minimal_participants++;
+      method.minimal_selector++;
       if (!Object.hasOwnProperty.call(object, Role.role_key_name)) {
         if (Object.defineProperty) {
           // Object.defineProperty is JS 1.8.0+
@@ -70,7 +70,7 @@ function clear_rank(method) {
 Method.clear_rank = clear_rank;
 
 function is_fully_specified(method) {
-  for (var i = 0; i < method.minimal_participants; i++) {
+  for (var i = 0; i < method.minimal_selector; i++) {
     if (!method._rank.hasOwnProperty(i)) {
       return false;
     }
