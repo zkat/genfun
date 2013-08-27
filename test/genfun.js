@@ -91,6 +91,38 @@ describe("Genfun", function() {
       });
       it("calls noApplicableMethod if there are no methods defined");
     });
+    describe("callNextMethod", function() {
+      var frob = new Genfun();
+      Genfun.addMethod(frob, [Object.prototype], function() {
+        return "default";
+      });
+      it("allows the next applicable method to be called", function() {
+        var obj = Object.create({}),
+            objChild = Object.create(obj);
+        Genfun.addMethod(frob, [obj], function() {
+          return Genfun.callNextMethod();
+        });
+        Genfun.addMethod(frob, [objChild], function() {
+          return Genfun.callNextMethod();
+        });
+        assert.equal("default", frob(obj));
+        assert.equal("default", frob(objChild));
+      });
+      it("can only be called when there is a next method available");
+      it("can only be called within the scope of a method");
+      it("does not call noApplicableMethod when done");
+      it("accepts new arguments for the next method to use");
+    });
+    describe("hasNextMethod", function() {
+      it("returns true if there is a next method available");
+      it("can only be called in the scope of a method");
+    });
+    describe("noNextMethod", function() {
+      it("throws an error by default");
+      it("can have methods defined on it to replace the behavior per-genfun");
+    });
+    describe("method combination", function() {
+    });
     describe("dispatch", function() {
       describe("basic single dispatch", function() {
         var frob = new Genfun(),
