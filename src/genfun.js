@@ -105,7 +105,6 @@ Genfun.addMethod(Genfun.noApplicableMethod, [], function(gf, thisArg, args) {
 });
 
 var _current_applicable_methods,
-    _current_genfun,
     _current_this,
     _current_args;
 function hasNextMethod() {
@@ -122,7 +121,8 @@ function callNextMethod() {
   if (hasNextMethod()) {
     _current_args = arguments.length ? arguments : _current_args;
     _current_applicable_methods = [].slice.call(_current_applicable_methods, 1);
-    return _current_applicable_methods[0].func.apply(_current_this, _current_args);
+    return _current_applicable_methods[0].func.apply(
+      _current_this, _current_args);
   } else {
     return noNextMethod();
   }
