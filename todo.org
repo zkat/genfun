@@ -1,4 +1,4 @@
-* archive [26/26]
+* archive [28/28]
 ** DONE Write a package.json file                             :build:release:
    CLOSED: [2013-08-17 Sat 11:05]
 ** DONE Add build system                                              :build:
@@ -85,6 +85,31 @@
    Probably the best thing to do here is to pick a module that's already
    written in OO style and rewrite it to show the different. Maybe
    something like todomvc has a tiny example I can base it on?
+** DONE Consistent term for a method's 'participants'            :yakshaving:
+   CLOSED: [2013-08-26 Mon 23:25]
+   What about "selector"? It's pretty widespread in the JS community. :)
+** DONE Method combination                                          :feature:
+   CLOSED: [2013-08-27 Tue 00:44]
+   Or at least the ability to Genfun.next_method()
+   This is actually pretty important to have. :\
+
+   Update: The current approach is reasonable, although the dynamic nature
+   of callNextMethod and company is a bit worrisome. Better to have
+   something at all, though. Might be good to structure it later so method
+   functions accept arguments and stuff, instead of setting all these
+   variables.
+   The one big downside right now is that this approach won't mesh very
+   well with the way we're doing "default" methods -- meaning, right now,
+   the method-definition algorithm treats methods with [] selectors as
+   noApplicableMethod definitions. It might be a bit surprising to define
+   a [] method and not have it be accesible with callNextMethod.
+   That said, it's also not acceptable to have objects with null
+   prototypes get access to this noApplicableMethod functionality
+   magically.
+
+   tl;dr: either git rid of the [] shorthand for noApplicableMethod or let
+   people just wonder why [] "methods" aren't being called by
+   callNextMethod. Just specify it that way and be done with it.
 * backlog [0/13]
 ** TODO Use partial dispatch trick                             :optimization:
 ** TODO Cache effective method function                        :optimization:
@@ -103,8 +128,6 @@
 ** TODO Special-case genfun functions in dispatch                   :feature:
    If we try to dispatch a genfun's wrapper function, redirect dispatch so
    that it pretends it's actually working on the genfun.
-** TODO Method combination                                          :feature:
-   Or at least the ability to Genfun.next_method()
 ** TODO Method redefinition                                         :feature:
    Overwrite methods with identical specs.
 ** TODO Method removal                                              :feature:
@@ -113,8 +136,13 @@
    Right now, all arguments across the arglist are scored evenly. Consider
    making items earlier in the arglist have greater weight in the scoring
    algorithm.
-* active [0/14]
-** TODO Try having the type spec as the third argument to addMethod     :api:
+** TODO Rewrite the callNextMethod stuff                            :cleanup:
+   Don't just set something globally, or something. I don't know. Do it different.
+* active [1/15]
+** DONE Write more tests for the nextMethod stuff                      :test:
+   CLOSED: [2013-08-28 Wed 18:59]
+** TODO Allow rebinding of `this` in callNextMethod                 :feature:
+** TODO Try having the selector as the third argument to addMethod      :api:
    Functions get annoyingly indented otherwise.
 ** TODO Figure out selling points                                      :meta:
    Figure out what would get people interested in genfun.js
@@ -142,7 +170,6 @@
    tests. Make more granular tests that test things like integration with
    primitives, variable arity methods, empty places in the dispatch array,
    empty dispatch arrays, prototype inheritance, etc.
-** TODO Consistent term for a method's 'participants'            :yakshaving:
 ** TODO split test/genfun.js into multiple files                       :test:
    It's starting to be a bit of an overwhelming blob of text.
 ** TODO Consider using something other than assert for tests           :test:
