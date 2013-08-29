@@ -92,13 +92,13 @@ describe("Genfun", function() {
       it("calls noApplicableMethod if there are no methods defined");
     });
     describe("callNextMethod", function() {
-      var frob = new Genfun();
-      Genfun.addMethod(frob, [Object.prototype], function() {
-        return "default";
-      });
       it("allows the next applicable method to be called", function() {
-        var obj = Object.create({}),
+        var frob = new Genfun(),
+            obj = Object.create({}),
             objChild = Object.create(obj);
+        Genfun.addMethod(frob, [Object.prototype], function() {
+          return "default";
+        });
         Genfun.addMethod(frob, [obj], function() {
           return Genfun.callNextMethod();
         });
@@ -108,10 +108,67 @@ describe("Genfun", function() {
         assert.equal("default", frob(obj));
         assert.equal("default", frob(objChild));
       });
-      it("can only be called when there is a next method available");
-      it("can only be called within the scope of a method");
-      it("does not call noApplicableMethod when done");
-      it("accepts new arguments for the next method to use");
+      it("can only be called when there is a next method available", function() {
+        var frob = new Genfun(),
+            obj = Object.create({});
+        Genfun.addMethod(frob, [frob], function() {
+          return Genfun.callNextMethod();
+        });
+        assert.throws(function() { frob(Object.create(obj)); });
+        Genfun.addMethod(frob, [Object.prototype], function() { return "ok!"; });
+        assert.equal("ok!", frob(Object.create(obj)));
+      });
+      it("can only be called within the scope of a method", function() {
+        var frob = new Genfun(),
+            obj = Object.create({});
+        Genfun.addMethod(frob, [Object.prototype], function() {
+          return "ok";
+        });
+        Genfun.addMethod(frob, [obj], function() {
+          return Genfun.callNextMethod();
+        });
+        assert.throws(function() { Genfun.callNextMethod(); });
+        assert.equal("ok",  frob(obj));
+      });
+      it("does not call noApplicableMethod when done", function() {
+        var frob = new Genfun(),
+            obj = Object.create({});
+        Genfun.addMethod(frob, [], function() {
+          return "noApplicableMethod";
+        });
+        Genfun.addMethod(frob, [obj], function() {
+          return Genfun.callNextMethod();
+        });
+        assert.throws(function() { frob(obj); });
+      });
+      it("calls the next method using the original arguments", function() {
+        var frob = new Genfun(),
+            obj = {};
+        Genfun.addMethod(frob, [Object.prototype], function() {
+          return {
+            args: arguments,
+            thisval: this
+          };
+        });
+        Genfun.addMethod(frob, [obj], function() {
+          return Genfun.callNextMethod();
+        });
+        var ret = frob.call("test", obj);
+        assert.equal(obj, ret.args[0]);
+        assert.equal("test", ret.thisval);
+      });
+      it("accepts new arguments for the next method to use", function() {
+        var frob = new Genfun(),
+            obj = {name: "whoosh"};
+        Genfun.addMethod(frob, [Object.prototype], function(arg) {
+          return arg+" called next.";
+        });
+        Genfun.addMethod(frob, [obj], function(x) {
+          return "And so then, " + Genfun.callNextMethod(obj.name);
+        });
+        assert.equal("And so then, whoosh called next.", frob(obj));
+      });
+      it("allows rebinding of `this` in the next method");
     });
     describe("hasNextMethod", function() {
       it("returns true if there is a next method available");
