@@ -1,4 +1,4 @@
-# Genfun.js [![Build Status](https://www.travis-ci.org/zkat/genfun.js.png)]] ![Dependencies Status](https://www.david-dm.org/zkat/genfun.js.png)
+# Genfun.js ![Build Status](https://www.travis-ci.org/zkat/genfun.js.png) ![Dependencies Status](https://www.david-dm.org/zkat/genfun.js.png)
 
 `genfun.js` is
 [hosted at Github](http://github.com/zkat/genfun.js). `genfun.js` is a
