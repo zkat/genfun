@@ -21,16 +21,20 @@ free to do whatever you want with it.
 or
 `$ bower install genfun`
 
-The `npm` version includes a build/ directory with pre-built and
-pre-minified UMD versions of `genfun.js` which are loadable by both AMD and
-CommonJS module systems. To generate these files in `bower`, or if you
-fetched `genfun.js` from source, simply run:
+The `npm` version includes a build/ directory with both pre-built and
+minified [UMD](https://github.com/umdjs/umd) versions of `genfun.js` which
+are loadable by both [AMD](http://requirejs.org/docs/whyamd.html) and
+[CommonJS](http://www.commonjs.org/) module systems. UMD will define
+window.Genfun if neither AMD or CommonJS are used. To generate these files
+in `bower`, or if you fetched `genfun.js` from source, simply run:
 
 ```
 $ npm install
 ...dev dependencies installed...
 $ make
 ```
+
+And use `build/genfun.js` or `build/genfun.min.js` in your application.
 
 ### Example
 
@@ -46,7 +50,15 @@ var Genfun = require("genfun"),
 function Person() {}
 function Dog() {}
 
+// Creates a generic function. This is a regular, callable function.
 var frobnicate = new Genfun();
+
+// addMethod is used to define new methods on genfuns, with the most
+// "specific"  method firing when multiple methods are applicable to a set of
+// arguments when the genfun is called.
+//
+// addMethod(<genfun>, <selector>, <method function>)
+//
 addMethod(frobnicate, [Person.prototype], function(person) {
   console.log("Got a person!");
 });
@@ -55,6 +67,12 @@ addMethod(frobnicate, [Dog.prototype], function(dog) {
   console.log("Got a dog!");
 });
 
+// Selectors can include multiple arguments, which correspond to argument
+// positions when the genfun is called.
+//
+// This last method will dispatch only when a string, a Person, and a Dog
+// are the arguments to frobnicate (in that order).
+//
 addMethod(
   frobnicate,
   [String.prototype, Person.prototype, Dog.prototype],
