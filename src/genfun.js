@@ -23,6 +23,12 @@ function Genfun() {
     return apply_genfun(genfun, this, arguments);
   };
   fun.genfun = genfun;
+  fun.addMethod = function(selector, func) {
+    return Genfun.addMethod(genfun, selector, func);
+  };
+  fun.removeMethod = function(selector, func) {
+    return Genfun.removeMethod(genfun, selector, func);
+  };
   genfun._wrapper_function = fun;
   return fun;
 }
