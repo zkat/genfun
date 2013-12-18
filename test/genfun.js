@@ -364,6 +364,11 @@ describe("Genfun", function() {
   
   describe("addMethod", function() {
     it("defines a new method on the genfun");
+    it("is accessible as a method on genfuns", function() {
+      var frob = new Genfun();
+      frob.addMethod([String.prototype], function(str) { return str+"!"; });
+      assert.equal("success!", frob("success"));
+    });
     it("can define methods that dispatch on objects with null [[Proto]]", function() {
       var frob = new Genfun(),
           nullProto = Object.create(null);
