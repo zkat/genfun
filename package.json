@@ -32,8 +32,8 @@
   "readmeFilename": "README.md",
   "scripts": {
     "build": "babel src --out-dir dist --source-map",
+    "postpublish": "semantic-release post",
     "prepublish": "npm run build && semantic-release pre",
-    "test": "npm run build && standard src/*.js && mocha",
-    "postpublish": "semantic-release post"
+    "test": "npm run build && standard src/*.js && mocha --check-leaks"
   }
 }
