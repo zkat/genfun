@@ -1,9 +1,6 @@
-/* -*- js2-basic-offset: 2; indent-tabs-mode: nil; -*- */
-/* vim: set ft=javascript ts=2 et sw=2 tw=80; */
-"use strict";
-var Method = require("./method"),
-    Role = require("./role"),
-    util = require("./util");
+import Method from './method'
+import Role from './role'
+import * as util from './util'
 
 /**
  * Creates generic functions capable of multiple dispatch across several
@@ -15,30 +12,32 @@ var Method = require("./method"),
  * @param {object} [opts] - Options used when initializing the genfun.
  * @returns {function} New generic function.
  */
-function Genfun() {
-  var genfun = this;
-  genfun.methods = [];
-  genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
-  var fun = function() {
-    return apply_genfun(genfun, this, arguments);
-  };
-  fun.genfun = genfun;
-  fun.addMethod = function(selector, func) {
-    return Genfun.addMethod(genfun, selector, func);
-  };
-  fun.removeMethod = function(selector, func) {
-    return Genfun.removeMethod(genfun, selector, func);
-  };
-  genfun._wrapper_function = fun;
-  return fun;
+export default function Genfun () {
+  var genfun = this
+  genfun.methods = []
+  genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED}
+  var fun = function () {
+    return applyGenfun(genfun, this, arguments)
+  }
+  fun.genfun = genfun
+  fun.addMethod = (selector, func) => {
+    return Genfun.addMethod(genfun, selector, func)
+  }
+  fun.removeMethod = (selector, func) => {
+    return Genfun.removeMethod(genfun, selector, func)
+  }
+  genfun._wrapperFunction = fun
+  return fun
 }
 
-Genfun.UNITIALIZED = 0;
-Genfun.MONOMORPHIC = 1;
-Genfun.POLYMORPHIC = 2;
-Genfun.MEGAMORPHIC = 3;
+const STATES = {
+  UNINITIALIZED: 0,
+  MONOMORPHIC: 1,
+  POLYMORPHIC: 2,
+  MEGAMORPHIC: 3
+}
 
-Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache needs to be bigger.
+Genfun.MAX_CACHE_SIZE = 32 // Can't inline, so the cache needs to be bigger.
 
 /**
  * Defines a method on a generic function.
@@ -49,30 +48,29 @@ Genfun.MAX_CACHE_SIZE = 32; // Can't inline, so the cache needs to be bigger.
  * @param {Function} methodFunction - Function to execute when the method
  *                                    successfully dispatches.
  */
-Genfun.addMethod = function(genfun, selector, func) {
-  genfun = typeof genfun === "function" &&
+Genfun.addMethod = (genfun, selector, func) => {
+  genfun = typeof genfun === 'function' &&
     genfun.genfun &&
     genfun.genfun instanceof Genfun ?
-    genfun.genfun : genfun;
+    genfun.genfun : genfun
   if (selector.length) {
-    selector = [].slice.call(selector);
+    selector = [].slice.call(selector)
     for (var i = 0; i < selector.length; i++) {
       if (!selector.hasOwnProperty(i)) {
-        selector[i] = Object.prototype;
+        selector[i] = Object.prototype
       }
     }
-    var method = new Method(genfun, selector, func);
-    genfun.methods.push(method);
-    genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED};
-    return method;
+    let method = new Method(genfun, selector, func)
+    genfun.methods.push(method)
+    genfun.cache = {key: [], methods: [], state: STATES.UNINITIALIZED}
+    return method
   } else {
     return Genfun.addMethod(
       Genfun.noApplicableMethod,
-      [genfun._wrapper_function], function(_gf, newthis, args) {
-        return func.apply(newthis, args);
-      });
+      [genfun._wrapperFunction],
+      (_gf, newthis, args) => func.apply(newthis, args))
   }
-};
+}
 
 /**
  * Removes a previously-defined method on `genfun` that matches
@@ -83,9 +81,9 @@ Genfun.addMethod = function(genfun, selector, func) {
  * @param {Array-like} selector - Objects to match on when finding a
  *                                    method to remove.
  */
-Genfun.removeMethod = function() {
-  throw new Error("not yet implemented");
-};
+Genfun.removeMethod = () => {
+  throw new Error('not yet implemented')
+}
 
 /**
  * This generic function is called when `genfun` has been called and no
@@ -96,194 +94,189 @@ Genfun.removeMethod = function() {
  * @param {*} newthis - value of `this` the genfun was called with.
  * @param {Array} callArgs - Arguments the genfun was called with.
  */
-Genfun.noApplicableMethod = new Genfun();
-Genfun.addMethod(Genfun.noApplicableMethod, [], function(gf, thisArg, args) {
-  var msg =
-        "No applicable method found when called with arguments of types: (" +
-        [].map.call(args, function(arg) {
-          return (/\[object ([a-zA-Z0-9]+)\]/).exec(({}).toString.call(arg))[1];
-        }).join(", ") + ")",
-      err = new Error(msg);
-  err.genfun = gf;
-  err.thisArg = thisArg;
-  err.args = args;
-  throw err;
-});
+Genfun.noApplicableMethod = new Genfun()
+Genfun.addMethod(Genfun.noApplicableMethod, [], (gf, thisArg, args) => {
+  let msg =
+        'No applicable method found when called with arguments of types: (' +
+        [].map.call(args, (arg) => {
+          return (/\[object ([a-zA-Z0-9]+)\]/)
+            .exec(({}).toString.call(arg))[1]
+        }).join(', ') + ')'
+  let err = new Error(msg)
+  err.genfun = gf
+  err.thisArg = thisArg
+  err.args = args
+  throw err
+})
 
-var _current_applicable_methods,
-    _current_this,
-    _current_args;
-function hasNextMethod() {
-  if (typeof _current_applicable_methods === "undefined") {
-    throw new Error("hasNextMethod and callNextMethod must "+
-                    "be called inside a Genfun method.");
+let _currentApplicableMethods
+let _currentThis
+let _currentArgs
+Genfun.hasNextMethod = () => {
+  if (!_currentApplicableMethods) {
+    throw new Error('hasNextMethod and callNextMethod must ' +
+                    'be called inside a Genfun method.')
   } else {
-    return !!_current_applicable_methods.length;
+    return !!_currentApplicableMethods.length
   }
 }
-Genfun.hasNextMethod = hasNextMethod;
 
-function callNextMethod() {
-  if (hasNextMethod()) {
-    _current_args = arguments.length ? arguments : _current_args;
-    _current_applicable_methods = [].slice.call(_current_applicable_methods, 1);
-    return _current_applicable_methods[0].func.apply(
-      _current_this, _current_args);
+Genfun.callNextMethod = (...args) => {
+  if (Genfun.hasNextMethod()) {
+    _currentArgs = args.length ? args : _currentArgs
+    _currentApplicableMethods = [].slice.call(_currentApplicableMethods, 1)
+    return _currentApplicableMethods[0].func.apply(_currentThis, _currentArgs)
   } else {
-    return noNextMethod();
+    return Genfun.noNextMethod()
   }
 }
-Genfun.callNextMethod = callNextMethod;
 
-function noNextMethod() {
-  throw new Error("No next method available");
+Genfun.noNextMethod = () => {
+  throw new Error('No next method available')
 }
-Genfun.noNextMethod = noNextMethod;
 
 /*
  * Internal
  */
-function apply_genfun(genfun, newthis, args) {
-  var applicable_methods = get_applicable_methods(genfun, args),
-      ret, tmp_current_methods, tmp_this, tmp_args;
-  if (applicable_methods.length) {
-    tmp_current_methods = _current_applicable_methods;
-    tmp_this = _current_this;
-    tmp_args = _current_args;
-    _current_applicable_methods = applicable_methods;
-    _current_this = newthis;
-    _current_args = args;
-    ret = applicable_methods[0].func.apply(newthis, args);
-    _current_applicable_methods = tmp_current_methods;
-    _current_this = tmp_this;
-    _current_args = tmp_args;
-    return ret;
+function applyGenfun (genfun, newthis, args) {
+  let applicableMethods = getApplicableMethods(genfun, args)
+  let ret, tmpCurrentMethods, tmpThis, tmpArgs
+  if (applicableMethods.length) {
+    tmpCurrentMethods = _currentApplicableMethods
+    tmpThis = _currentThis
+    tmpArgs = _currentArgs
+    _currentApplicableMethods = applicableMethods
+    _currentThis = newthis
+    _currentArgs = args
+    ret = applicableMethods[0].func.apply(newthis, args)
+    _currentApplicableMethods = tmpCurrentMethods
+    _currentThis = tmpThis
+    _currentArgs = tmpArgs
+    return ret
   } else {
-    return Genfun.noApplicableMethod(genfun._wrapper_function, newthis, args);
+    return Genfun.noApplicableMethod(genfun._wrapperFunction, newthis, args)
   }
 }
 
-function get_applicable_methods(genfun, args) {
-  var applicable_methods;
-  var maybe_methods = cached_methods(genfun, args);
-  if (maybe_methods) {
-    applicable_methods = maybe_methods;
+function getApplicableMethods (genfun, args) {
+  let applicableMethods
+  let maybeMethods = cachedMethods(genfun, args)
+  if (maybeMethods) {
+    applicableMethods = maybeMethods
   } else {
-    applicable_methods = compute_applicable_methods(genfun, args);
-    cache_args(genfun, args, applicable_methods);
+    applicableMethods = computeApplicableMethods(genfun, args)
+    cacheArgs(genfun, args, applicableMethods)
   }
-  return applicable_methods;
+  return applicableMethods
 }
 
-function cache_args(genfun, args, methods) {
-  if (genfun.cache.state === Genfun.MEGAMORPHIC) return;
-  var key = [];
-  var proto;
+function cacheArgs (genfun, args, methods) {
+  if (genfun.cache.state === STATES.MEGAMORPHIC) { return }
+  var key = []
+  var proto
   for (var i = 0; i < args.length; i++) {
-    proto = cacheable_proto(genfun, args[i]);
+    proto = cacheableProto(genfun, args[i])
     if (proto) {
-      key[i] = proto;
+      key[i] = proto
     } else {
-      return;
+      return null
     }
   }
-  genfun.cache.key.unshift(key);
-  genfun.cache.methods.unshift(methods);
+  genfun.cache.key.unshift(key)
+  genfun.cache.methods.unshift(methods)
   if (genfun.cache.key.length === 1) {
-    genfun.cache.state = Genfun.MONOMORPHIC;
+    genfun.cache.state = STATES.MONOMORPHIC
   } else if (genfun.cache.key.length < Genfun.MAX_CACHE_SIZE) {
-    genfun.cache.state = Genfun.POLYMORPHIC;
+    genfun.cache.state = STATES.POLYMORPHIC
   } else {
-    genfun.cache.state = Genfun.MEGAMORPHIC;
+    genfun.cache.state = STATES.MEGAMORPHIC
   }
 }
 
-function cacheable_proto(genfun, arg) {
-  var dispatchable = dispatchable_object(arg);
-  if (Object.hasOwnProperty.call(dispatchable, Role.role_key_name)) {
-    for (var j = 0; j < dispatchable[Role.role_key_name].length; j++) {
-      var role = dispatchable[Role.role_key_name][j];
+function cacheableProto (genfun, arg) {
+  var dispatchable = dispatchableObject(arg)
+  if (Object.hasOwnProperty.call(dispatchable, Role.roleKeyName)) {
+    for (var j = 0; j < dispatchable[Role.roleKeyName].length; j++) {
+      var role = dispatchable[Role.roleKeyName][j]
       if (role.method.genfun === genfun) {
-        return undefined;
+        return null
       }
     }
   }
-  return Object.getPrototypeOf(dispatchable);
+  return Object.getPrototypeOf(dispatchable)
 }
 
-function cached_methods(genfun, args) {
-  if (genfun.cache.state === Genfun.UNINITIALIZED ||
-      genfun.cache.state === Genfun.MEGAMORPHIC) return;
-  var protos = [];
-  var proto;
+function cachedMethods (genfun, args) {
+  if (genfun.cache.state === STATES.UNINITIALIZED ||
+      genfun.cache.state === STATES.MEGAMORPHIC) {
+    return null
+  }
+  var protos = []
+  var proto
   for (var i = 0; i < args.length; i++) {
-    proto = cacheable_proto(genfun, args[i]);
+    proto = cacheableProto(genfun, args[i])
     if (proto) {
-      protos[i] = proto;
+      protos[i] = proto
     } else {
-      return;
+      return
     }
   }
   for (i = 0; i < genfun.cache.key.length; i++) {
-    if (match_cached_methods(genfun.cache.key[i], protos)) {
-      return genfun.cache.methods[i];
+    if (matchCachedMethods(genfun.cache.key[i], protos)) {
+      return genfun.cache.methods[i]
     }
   }
 }
 
-function match_cached_methods(key, protos) {
-  if (key.length !== protos.length) return false;
+function matchCachedMethods (key, protos) {
+  if (key.length !== protos.length) { return false }
   for (var i = 0; i < key.length; i++) {
     if (key[i] !== protos[i]) {
-      return false;
+      return false
     }
   }
-  return true;
+  return true
 }
 
-function compute_applicable_methods(genfun, args) {
-  args = [].slice.call(args);
-  var discovered_methods = [];
-  function find_and_rank_roles(object, hierarchy_position, index) {
-    var roles = Object.hasOwnProperty.call(object, Role.role_key_name) ?
-          object[Role.role_key_name] :
-          [];
-    roles.forEach(function(role) {
+function computeApplicableMethods (genfun, args) {
+  args = [].slice.call(args)
+  let discoveredMethods = []
+  function findAndRankRoles (object, hierarchyPosition, index) {
+    var roles = Object.hasOwnProperty.call(object, Role.roleKeyName) ?
+          object[Role.roleKeyName] :
+          []
+    roles.forEach(role => {
       if (role.method.genfun === genfun && index === role.position) {
-        if (discovered_methods.indexOf(role.method) < 0) {
-          Method.clear_rank(role.method);
-          discovered_methods.push(role.method);
+        if (discoveredMethods.indexOf(role.method) < 0) {
+          Method.clearRank(role.method)
+          discoveredMethods.push(role.method)
         }
-        Method.set_rank_hierarchy_position(
-          role.method, index, hierarchy_position);
+        Method.setRankHierarchyPosition(role.method, index, hierarchyPosition)
       }
-    });
+    })
     // When a discovered method would receive more arguments than
     // were specialized, we pretend all extra arguments have a role
     // on Object.prototype.
-    if (util.is_object_proto(object)) {
-      discovered_methods.forEach(function(method) {
-        if (method.minimal_selector <= index) {
-          Method.set_rank_hierarchy_position(
-            method, index, hierarchy_position);
+    if (util.isObjectProto(object)) {
+      discoveredMethods.forEach(method => {
+        if (method.minimalSelector <= index) {
+          Method.setRankHierarchyPosition(method, index, hierarchyPosition)
         }
-      });
+      })
     }
   }
-  args.forEach(function(arg, index) {
-    get_precedence_list(dispatchable_object(arg))
-      .forEach(function(obj, hierarchy_position) {
-        find_and_rank_roles(obj, hierarchy_position, index);
-      });
-  });
-  var applicable_methods = discovered_methods.filter(function(method) {
+  args.forEach((arg, index) => {
+    getPrecedenceList(dispatchableObject(arg))
+      .forEach((obj, hierarchyPosition) => {
+        findAndRankRoles(obj, hierarchyPosition, index)
+      })
+  })
+  let applicableMethods = discoveredMethods.filter(method => {
     return (args.length === method._rank.length &&
-            Method.is_fully_specified(method));
-  });
-  applicable_methods.sort(function(a, b) {
-    return Method.score(a) - Method.score(b);
-  });
-  return applicable_methods;
+            Method.isFullySpecified(method))
+  })
+  applicableMethods.sort((a, b) => Method.score(a) - Method.score(b))
+  return applicableMethods
 }
 
 /*
@@ -291,38 +284,31 @@ function compute_applicable_methods(genfun, args) {
  * inheritance/precedence chain for an object by navigating its
  * prototype pointers.
  */
-function get_precedence_list(obj) {
-  var precedence_list = [];
-  var next_obj = obj;
-  while(next_obj) {
-    precedence_list.push(next_obj);
-    next_obj = Object.getPrototypeOf(next_obj);
+function getPrecedenceList (obj) {
+  var precedenceList = []
+  var nextObj = obj
+  while (nextObj) {
+    precedenceList.push(nextObj)
+    nextObj = Object.getPrototypeOf(nextObj)
   }
-  return precedence_list;
+  return precedenceList
 }
 
 /*
  * Returns a useful dispatch object for value using a process similar to
  * the ToObject operation specified in http://es5.github.com/#x9.9
  */
-function dispatchable_object(value) {
+function dispatchableObject (value) {
   // To shut up jshint, which doesn't let me turn off this warning.
-  var Bool = Boolean,
-      Num = Number,
-      Str = String,
-      Obj = Object;
+  const Bool = Boolean
+  const Num = Number
+  const Str = String
+  const Obj = Object
   switch (typeof value) {
-  case "object":
-    return value;
-  case "boolean":
-    return new Bool(value);
-  case "number":
-    return new Num(value);
-  case "string":
-    return new Str(value);
-  default:
-    return new Obj(value);
+  case 'object': return value
+  case 'boolean': return new Bool(value)
+  case 'number': return new Num(value)
+  case 'string': return new Str(value)
+  default: return new Obj(value)
   }
 }
-
-module.exports = Genfun;

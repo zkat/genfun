@@ -1,8 +1,6 @@
-/* -*- js-indent-level: 2; js2-basic-offset: 2; c-basic-offset: 2; indent-tabs-mode: nil; -*- */
-/* vim: set ft=javascript ts=2 et sw=2 tw=80; */
 "use strict";
 var assert = require("assert");
-var Genfun = require("../src/genfun");
+var Genfun = require("../dist/genfun");
 
 describe("Genfun", function() {
 
@@ -361,7 +359,7 @@ describe("Genfun", function() {
       });
     });
   });
-  
+
   describe("addMethod", function() {
     it("defines a new method on the genfun");
     it("is accessible as a method on genfuns", function() {
