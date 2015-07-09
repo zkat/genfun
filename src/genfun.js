@@ -13,19 +13,15 @@ import * as util from './util'
  * @returns {function} New generic function.
  */
 export default function Genfun () {
-  var genfun = this
+  let genfun = this || {}
   genfun.methods = []
   genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED}
   var fun = function () {
     return applyGenfun(genfun, this, arguments)
   }
   fun.genfun = genfun
-  fun.addMethod = (selector, func) => {
-    return Genfun.addMethod(genfun, selector, func)
-  }
-  fun.removeMethod = (selector, func) => {
-    return Genfun.removeMethod(genfun, selector, func)
-  }
+  fun.addMethod = addMethod
+  fun.removeMethod = removeMethod
   genfun._wrapperFunction = fun
   return fun
 }
@@ -43,12 +39,12 @@ Genfun.MAX_CACHE_SIZE = 32 // Can't inline, so the cache needs to be bigger.
  * Defines a method on a generic function.
  *
  * @function
- * @param {Genfun} genfun - Genfun instance to add the method to.
  * @param {Array-like} selector - Selector array for dispatching the method.
  * @param {Function} methodFunction - Function to execute when the method
  *                                    successfully dispatches.
  */
-Genfun.addMethod = (genfun, selector, func) => {
+function addMethod (selector, func) {
+  let genfun = this
   genfun = typeof genfun === 'function' &&
     genfun.genfun &&
     genfun.genfun instanceof Genfun ?
@@ -65,12 +61,12 @@ Genfun.addMethod = (genfun, selector, func) => {
     genfun.cache = {key: [], methods: [], state: STATES.UNINITIALIZED}
     return method
   } else {
-    return Genfun.addMethod(
-      Genfun.noApplicableMethod,
+    return Genfun.noApplicableMethod.addMethod(
       [genfun._wrapperFunction],
       (_gf, newthis, args) => func.apply(newthis, args))
   }
 }
+Genfun.addMethod = (genfun, sel, fn) => addMethod.call(genfun, sel, fn)
 
 /**
  * Removes a previously-defined method on `genfun` that matches
@@ -81,9 +77,10 @@ Genfun.addMethod = (genfun, selector, func) => {
  * @param {Array-like} selector - Objects to match on when finding a
  *                                    method to remove.
  */
-Genfun.removeMethod = () => {
+function removeMethod () {
   throw new Error('not yet implemented')
 }
+Genfun.removeMethod = (genfun, selector) => removeMethod.call(genfun, selector)
 
 /**
  * This generic function is called when `genfun` has been called and no
@@ -95,7 +92,7 @@ Genfun.removeMethod = () => {
  * @param {Array} callArgs - Arguments the genfun was called with.
  */
 Genfun.noApplicableMethod = new Genfun()
-Genfun.addMethod(Genfun.noApplicableMethod, [], (gf, thisArg, args) => {
+Genfun.noApplicableMethod.addMethod([], (gf, thisArg, args) => {
   let msg =
         'No applicable method found when called with arguments of types: (' +
         [].map.call(args, (arg) => {
