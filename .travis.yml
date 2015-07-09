@@ -1,5 +1,23 @@
 language: node_js
 node_js:
-  - "0.10"
-  - "0.8"
-  - "0.6"
+  - iojs-v1
+sudo: false
+cache:
+  directories:
+  - node_modules
+notifications:
+  email: false
+before_deploy:
+  - npm config set spin false --global
+env:
+  global:
+  - secure: cbFwxQm/JmvPkjvRsDRMFpAsGV8zrqEqjbYZHUX3tMqiJlZu/tNPQ2Cqbmg0wIOMl42G5Kr3DWA79gOsYilNlMDeALdPFHwMghoTNCdF6OWRi+SdAexKIcvZj/SXJq3N34Vn/r5OUk0MdiqTbgSOaIgXWwXB0KUYWvZt0Y+VRzQ=
+deploy:
+  provider: npm
+  email: kzm@sykosomatic.org
+  skip_cleanup: true
+  api_key:
+    secure: DbPo3b0KzyeNQboLR9KJV4ErI5BS2DIxRhU9sxbK9F+g73bkvz/qD2hAS2WH9TL5HUl4/I/wb2g19bUrU1uSjuW3I6BulkhiURFeBEsVq/GcBLohKaTMiGu+TQcg9MCaHK2pi7ZkTAaWyUXsT38roLTVmFl8eUUBhLFPi6RuSnA=
+  on:
+    branch: master
+    repo: zkat/genfun
