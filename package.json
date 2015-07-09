@@ -1,29 +1,21 @@
 {
   "name": "genfun",
   "description": "Prototype-friendly multiple method dispatch for JS.",
-  "homepage": "http://github.com/zkat/genfun.js",
+  "homepage": "http://github.com/zkat/genfun",
   "keywords": [
-    "browser",
-    "client",
     "clos",
     "functional",
     "oop",
-    "server",
     "util"
   ],
   "author": "Kat Marchán <kzm@sykosomatic.org>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/zkat/genfun.js"
+    "url": "git://github.com/zkat/genfun"
   },
   "main": "dist/genfun.js",
   "version": "0.0.0-semantically-released",
-  "licenses": [
-    {
-      "type": "CC0",
-      "url": "https://creativecommons.org/publicdomain/zero/1.0/"
-    }
-  ],
+  "license": "CC0-1.0",
   "files": [
     "Makefile",
     "README.md",
