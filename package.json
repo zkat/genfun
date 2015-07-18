@@ -34,6 +34,7 @@
     "build": "babel src --out-dir dist --source-map",
     "postpublish": "semantic-release post",
     "prepublish": "npm run build && semantic-release pre",
-    "test": "npm run build && standard src/*.js && mocha --check-leaks"
-  }
+    "test": "standard src/*.js && npm run build && mocha --check-leaks"
+  },
+  "dependencies": {}
 }
