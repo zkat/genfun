@@ -19,7 +19,7 @@
   "files": [
     "Makefile",
     "README.md",
-    "build/",
+    "dist/*.js",
     "src/*.js",
     "test/*.js"
   ],
