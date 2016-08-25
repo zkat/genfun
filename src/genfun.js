@@ -20,9 +20,7 @@ export default function Genfun () {
     return applyGenfun(genfun, this, arguments)
   }
   fun.genfun = genfun
-  fun.addMethod = addMethod
   fun.add = addMethod
-  fun.removeMethod = removeMethod
   fun.rm = removeMethod
   genfun._wrapperFunction = fun
   return fun
@@ -61,14 +59,13 @@ function addMethod (selector, func) {
     let method = new Method(genfun, selector, func)
     genfun.methods.push(method)
     genfun.cache = {}
-    return method
+    return genfun
   } else {
-    return Genfun.noApplicableMethod.addMethod(
+    return Genfun.noApplicableMethod.add(
       [genfun._wrapperFunction],
       (_gf, newthis, args) => func.apply(newthis, args))
   }
 }
-Genfun.addMethod = (genfun, sel, fn) => addMethod.call(genfun, sel, fn)
 
 /**
  * Removes a previously-defined method on `genfun` that matches
@@ -82,7 +79,6 @@ Genfun.addMethod = (genfun, sel, fn) => addMethod.call(genfun, sel, fn)
 function removeMethod () {
   throw new Error('not yet implemented')
 }
-Genfun.removeMethod = (genfun, selector) => removeMethod.call(genfun, selector)
 
 /**
  * This generic function is called when `genfun` has been called and no
@@ -94,7 +90,7 @@ Genfun.removeMethod = (genfun, selector) => removeMethod.call(genfun, selector)
  * @param {Array} callArgs - Arguments the genfun was called with.
  */
 Genfun.noApplicableMethod = new Genfun()
-Genfun.noApplicableMethod.addMethod([], (gf, thisArg, args) => {
+Genfun.noApplicableMethod.add([], (gf, thisArg, args) => {
   let msg =
         'No applicable method found when called with arguments of types: (' +
         [].map.call(args, (arg) => {

@@ -32,6 +32,9 @@ export default function Method (genfun, selector, func) {
     object = Object.hasOwnProperty.call(tmpSelector, i) ?
       tmpSelector[i] :
       Object.prototype
+    if (typeof object === 'function' && !object.genfun) {
+      object = object.prototype
+    }
     if (i > 0 &&
         !method.minimalSelector &&
         util.isObjectProto(object)) {
