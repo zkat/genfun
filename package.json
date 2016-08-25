@@ -13,22 +13,24 @@
     "type": "git",
     "url": "git://github.com/zkat/genfun"
   },
-  "main": "dist/genfun.js",
+  "main": "lib/genfun.js",
   "version": "1.0.1",
   "license": "CC0-1.0",
   "files": [
-    "dist/*.js"
+    "lib/*.js"
   ],
   "devDependencies": {
-    "babel": "^5.6.14",
+    "babel-cli": "^6.1.4",
+    "babel-preset-es2015": "^6.1.4",
+    "nyc": "^5.5.0",
     "mocha": "~1.12.0",
     "standard": "^4.5.2"
   },
   "readmeFilename": "README.md",
   "scripts": {
-    "build": "babel src --out-dir dist --source-map",
+    "build": "babel --presets es2015 src --out-dir lib",
     "prepublish": "npm run build",
-    "test": "standard src/*.js && npm run build && mocha --check-leaks"
+    "test": "standard src/*.js && npm run build && nyc -- mocha --reporter spec"
   },
   "dependencies": {}
 }
