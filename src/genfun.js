@@ -15,7 +15,7 @@ import * as util from './util'
 export default function Genfun () {
   let genfun = this || {}
   genfun.methods = []
-  genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED}
+  genfun.cache = {}
   var fun = function () {
     return applyGenfun(genfun, this, arguments)
   }
@@ -35,7 +35,7 @@ const STATES = {
   MEGAMORPHIC: 3
 }
 
-Genfun.MAX_CACHE_SIZE = 32 // Can't inline, so the cache needs to be bigger.
+Genfun.MAX_CACHE_SIZE = 8 // Can't inline, so the cache needs to be bigger.
 
 /**
  * Defines a method on a generic function.
@@ -48,9 +48,9 @@ Genfun.MAX_CACHE_SIZE = 32 // Can't inline, so the cache needs to be bigger.
 function addMethod (selector, func) {
   let genfun = this
   genfun = typeof genfun === 'function' &&
-    genfun.genfun &&
-    genfun.genfun instanceof Genfun ?
-    genfun.genfun : genfun
+    genfun.genfun
+    ? genfun.genfun
+    : genfun
   if (selector.length) {
     selector = [].slice.call(selector)
     for (var i = 0; i < selector.length; i++) {
@@ -60,7 +60,7 @@ function addMethod (selector, func) {
     }
     let method = new Method(genfun, selector, func)
     genfun.methods.push(method)
-    genfun.cache = {key: [], methods: [], state: STATES.UNINITIALIZED}
+    genfun.cache = {}
     return method
   } else {
     return Genfun.noApplicableMethod.addMethod(
@@ -159,18 +159,25 @@ function applyGenfun (genfun, newthis, args) {
 
 function getApplicableMethods (genfun, args) {
   let applicableMethods
-  let maybeMethods = cachedMethods(genfun, args)
+  const picLoc = (new Error()).stack
+  let maybeMethods = cachedMethods(genfun, picLoc, args)
   if (maybeMethods) {
     applicableMethods = maybeMethods
   } else {
     applicableMethods = computeApplicableMethods(genfun, args)
-    cacheArgs(genfun, args, applicableMethods)
+    cacheArgs(genfun, picLoc, args, applicableMethods)
   }
   return applicableMethods
 }
 
-function cacheArgs (genfun, args, methods) {
-  if (genfun.cache.state === STATES.MEGAMORPHIC) { return }
+function cacheArgs (genfun, picLoc, args, methods) {
+  var cache = genfun.cache[picLoc]
+  if (!cache) {
+    cache =
+    genfun.cache[picLoc] =
+    {key: [], methods: [], state: Genfun.UNINITIALIZED}
+  }
+  if (cache.state === STATES.MEGAMORPHIC) { return }
   var key = []
   var proto
   for (var i = 0; i < args.length; i++) {
@@ -181,14 +188,14 @@ function cacheArgs (genfun, args, methods) {
       return null
     }
   }
-  genfun.cache.key.unshift(key)
-  genfun.cache.methods.unshift(methods)
-  if (genfun.cache.key.length === 1) {
-    genfun.cache.state = STATES.MONOMORPHIC
-  } else if (genfun.cache.key.length < Genfun.MAX_CACHE_SIZE) {
-    genfun.cache.state = STATES.POLYMORPHIC
+  cache.key.unshift(key)
+  cache.methods.unshift(methods)
+  if (cache.key.length === 1) {
+    cache.state = STATES.MONOMORPHIC
+  } else if (cache.key.length < Genfun.MAX_CACHE_SIZE) {
+    cache.state = STATES.POLYMORPHIC
   } else {
-    genfun.cache.state = STATES.MEGAMORPHIC
+    cache.state = STATES.MEGAMORPHIC
   }
 }
 
@@ -205,9 +212,11 @@ function cacheableProto (genfun, arg) {
   return Object.getPrototypeOf(dispatchable)
 }
 
-function cachedMethods (genfun, args) {
-  if (genfun.cache.state === STATES.UNINITIALIZED ||
-      genfun.cache.state === STATES.MEGAMORPHIC) {
+function cachedMethods (genfun, picLoc, args) {
+  var cache = genfun.cache[picLoc]
+  if (!cache ||
+      cache.state === STATES.UNINITIALIZED ||
+      cache.state === STATES.MEGAMORPHIC) {
     return null
   }
   var protos = []
@@ -220,9 +229,9 @@ function cachedMethods (genfun, args) {
       return
     }
   }
-  for (i = 0; i < genfun.cache.key.length; i++) {
-    if (matchCachedMethods(genfun.cache.key[i], protos)) {
-      return genfun.cache.methods[i]
+  for (i = 0; i < cache.key.length; i++) {
+    if (matchCachedMethods(cache.key[i], protos)) {
+      return cache.methods[i]
     }
   }
 }
