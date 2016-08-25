@@ -21,7 +21,9 @@ export default function Genfun () {
   }
   fun.genfun = genfun
   fun.addMethod = addMethod
+  fun.add = addMethod
   fun.removeMethod = removeMethod
+  fun.rm = removeMethod
   genfun._wrapperFunction = fun
   return fun
 }
