@@ -33,7 +33,7 @@ const STATES = {
   MEGAMORPHIC: 3
 }
 
-Genfun.MAX_CACHE_SIZE = 8 // Can't inline, so the cache needs to be bigger.
+const MAX_CACHE_SIZE = 8
 
 /**
  * Defines a method on a generic function.
@@ -188,7 +188,7 @@ function cacheArgs (genfun, picLoc, args, methods) {
   cache.methods.unshift(methods)
   if (cache.key.length === 1) {
     cache.state = STATES.MONOMORPHIC
-  } else if (cache.key.length < Genfun.MAX_CACHE_SIZE) {
+  } else if (cache.key.length < MAX_CACHE_SIZE) {
     cache.state = STATES.POLYMORPHIC
   } else {
     cache.state = STATES.MEGAMORPHIC
