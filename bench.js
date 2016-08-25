@@ -4,46 +4,46 @@ var genfun = require('./')
 * Test setup
 */
 function TestObj () {}
-var test_obj = new TestObj()
-var test_genfun = genfun()
+var testObj = new TestObj()
+var gf = genfun()
 
 /*
 * Tests
 */
 
-function test_function (test_obj) {
-  return test_obj.toString() + 'test'
+function test_function (testObj) {
+  return testObj.toString() + 'test'
 }
 bench('Regular function', function () {
-  test_function(test_obj)
+  test_function(testObj)
 })
 
 TestObj.prototype.test_method = function () {
   return this.toString() + 'test'
 }
 bench('Native method', function () {
-  test_obj.test_method()
+  testObj.test_method()
 })
 
-test_genfun.add([TestObj.prototype], function (test_obj) {
-  return test_obj.toString() + 'test'
+gf.add([TestObj], function (testObj) {
+  return testObj.toString() + 'test'
 })
 bench('Singly-dispatched genfun', function () {
-  test_genfun(test_obj)
+  gf(testObj)
 })
 
-test_genfun.add([TestObj.prototype, TestObj.prototype], function (test_obj1, test_obj2) {
-  return test_obj.toString() + 'test'
+gf.add([TestObj, TestObj], function (testObj1, testObj2) {
+  return testObj.toString() + 'test'
 })
 bench('Double-dispatched genfun', function () {
-  test_genfun(test_obj, test_obj)
+  gf(testObj, testObj)
 })
 
-test_genfun.add([TestObj.prototype, String.prototype], function (test_obj1, string) {
-  return test_obj.toString() + string
+gf.add([TestObj, String], function (testObj1, string) {
+  return testObj.toString() + string
 })
 bench('Double-dispatched genfun with string primitive', function () {
-  test_genfun(test_obj, 'test')
+  gf(testObj, 'test')
 })
 
 /*
