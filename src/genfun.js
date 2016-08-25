@@ -246,9 +246,9 @@ function computeApplicableMethods (genfun, args) {
   args = [].slice.call(args)
   let discoveredMethods = []
   function findAndRankRoles (object, hierarchyPosition, index) {
-    var roles = Object.hasOwnProperty.call(object, Role.roleKeyName) ?
-          object[Role.roleKeyName] :
-          []
+    var roles = Object.hasOwnProperty.call(object, Role.roleKeyName)
+    ? object[Role.roleKeyName]
+    : []
     roles.forEach(role => {
       if (role.method.genfun === genfun && index === role.position) {
         if (discoveredMethods.indexOf(role.method) < 0) {
@@ -309,10 +309,10 @@ function dispatchableObject (value) {
   const Str = String
   const Obj = Object
   switch (typeof value) {
-  case 'object': return value
-  case 'boolean': return new Bool(value)
-  case 'number': return new Num(value)
-  case 'string': return new Str(value)
-  default: return new Obj(value)
+    case 'object': return value
+    case 'boolean': return new Bool(value)
+    case 'number': return new Num(value)
+    case 'string': return new Str(value)
+    default: return new Obj(value)
   }
 }

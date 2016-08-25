@@ -29,9 +29,9 @@ export default function Method (genfun, selector, func) {
 
   const tmpSelector = selector.length ? selector : [Object.prototype]
   for (var object, i = tmpSelector.length - 1; i >= 0; i--) {
-    object = Object.hasOwnProperty.call(tmpSelector, i) ?
-      tmpSelector[i] :
-      Object.prototype
+    object = Object.hasOwnProperty.call(tmpSelector, i)
+    ? tmpSelector[i]
+    : Object.prototype
     if (typeof object === 'function' && !object.genfun) {
       object = object.prototype
     }
