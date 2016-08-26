@@ -22,6 +22,7 @@ It was inspired by [Slate](http://slatelanguage.org/),
   * [`gf.add()`](#addMethod)
   * [`Genfun.callNextMethod()`](#callNextMethod)
   * [`Genfun.noApplicableMethod()`](#noApplicableMethod)
+* [Performance](#performance)
 
 ### Example
 
@@ -182,3 +183,18 @@ combinations, although `args` will always be an `Array`. The value returned from
 the dispatched `noApplicableMethod` method will be returned by `genfun` as if it
 had been its original method. Comparable to [Ruby's
 `method_missing`](http://ruby-doc.org/core-2.1.0/BasicObject.html#method-i-method_missing).
+
+### Performance
+
+`Genfun` pulls a few caching tricks to make sure dispatch, specially for common cases,
+is as fast as possible.
+
+How fast? Well, not much slower than native methods:
+
+```
+Regular function: 30.402ms
+Native method: 28.109ms
+Singly-dispatched genfun: 64.467ms
+Double-dispatched genfun: 70.052ms
+Double-dispatched genfun with string primitive: 76.742ms
+```
