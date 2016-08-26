@@ -22,7 +22,7 @@
     "url": "git://github.com/zkat/genfun"
   },
   "main": "lib/genfun.js",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "CC0-1.0",
   "files": [
     "lib/*.js"
