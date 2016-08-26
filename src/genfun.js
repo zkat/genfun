@@ -46,9 +46,9 @@ const MAX_CACHE_SIZE = 32
 function addMethod (selector, func) {
   let genfun = this
   genfun = typeof genfun === 'function' &&
-    genfun.genfun &&
-    genfun.genfun instanceof Genfun ?
-    genfun.genfun : genfun
+    genfun.genfun
+    ? genfun.genfun
+    : genfun
   if (selector.length) {
     selector = [].slice.call(selector)
     for (var i = 0; i < selector.length; i++) {
