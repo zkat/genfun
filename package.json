@@ -1,12 +1,20 @@
 {
   "name": "genfun",
-  "description": "Prototype-friendly multiple method dispatch for JS.",
+  "description": "Fast, prototype-friendly multimethods.",
   "homepage": "http://github.com/zkat/genfun",
   "keywords": [
     "clos",
     "functional",
     "oop",
-    "util"
+    "util",
+    "object oriented",
+    "prototypes",
+    "multimethod",
+    "generic functions",
+    "multiple dispatch",
+    "polymorphism",
+    "polymorphic",
+    "protocols"
   ],
   "author": "Kat Marchán <kzm@sykosomatic.org>",
   "repository": {

@@ -186,8 +186,8 @@ had been its original method. Comparable to [Ruby's
 
 ### Performance
 
-`Genfun` pulls a few caching tricks to make sure dispatch, specially for common cases,
-is as fast as possible.
+`Genfun` pulls a few caching tricks to make sure dispatch, specially for common
+cases, is as fast as possible.
 
 How fast? Well, not much slower than native methods:
 
