@@ -1,4 +1,4 @@
-var genfun = require('./')
+var genfun = require('./').default
 
 /*
 * Test setup
