@@ -1,6 +1,6 @@
 'use strict'
 var assert = require('assert')
-var genfun = require('..').default
+var genfun = require('..')
 
 describe('genfun', function () {
   describe('genfun()', function () {
