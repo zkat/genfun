@@ -108,26 +108,48 @@ let _currentApplicableMethods
 let _currentThis
 let _currentArgs
 Genfun.hasNextMethod = () => {
-  if (!_currentApplicableMethods) {
-    throw new Error('hasNextMethod and callNextMethod must ' +
-                    'be called inside a Genfun method.')
-  } else {
-    return !!_currentApplicableMethods.length
-  }
+  return (new Context()).hasNextMethod()
 }
 
 Genfun.callNextMethod = (...args) => {
-  if (Genfun.hasNextMethod()) {
-    _currentArgs = args.length ? args : _currentArgs
-    _currentApplicableMethods = [].slice.call(_currentApplicableMethods, 1)
-    return _currentApplicableMethods[0].func.apply(_currentThis, _currentArgs)
-  } else {
-    return Genfun.noNextMethod()
-  }
+  return (new Context()).callNextMethod(...args)
 }
 
 Genfun.noNextMethod = () => {
   throw new Error('No next method available')
+}
+
+Genfun.getContext = () => {
+  return new Context()
+}
+
+class Context {
+  constructor () {
+    this.applicableMethods = _currentApplicableMethods
+    this.this = _currentThis
+    this.args = _currentArgs
+  }
+
+  hasNextMethod () {
+    if (this.applicableMethods) {
+      return !!this.applicableMethods.length
+    } else {
+      throw new Error('hasNextMethod and callNextMethod must ' +
+      'be called inside a Genfun method.')
+    }
+  }
+
+  callNextMethod (...args) {
+    if (this.hasNextMethod()) {
+      _currentArgs = args.length ? args : this.args
+      _currentThis = this.this
+      _currentApplicableMethods = [].slice.call(this.applicableMethods, 1)
+      return _currentApplicableMethods[0].func.apply(
+        _currentThis, _currentArgs)
+    } else {
+      return Genfun.noNextMethod()
+    }
+  }
 }
 
 /*

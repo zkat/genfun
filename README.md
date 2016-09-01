@@ -129,6 +129,10 @@ numStr.add([Number, String], function (num, str) {
 
 #### <a name="callNextMethod"></a> `Genfun.callNextMethod([...<arguments>])`
 
+**NOTE**: This function can only be called synchronously. To call it
+asynchronously (for example, in a `Promise` or in a callback), use
+[`getContext`](#getContext)
+
 Calls the "next" applicable method in the method chain. Can only be called
 within the body of a method.
 
@@ -167,6 +171,25 @@ cnm(new Bar())
 // calling the method on Bar with {}
 // calling the method on Foo with "some other value!"
 // => 'some other value!'
+```
+
+#### <a name="getContext"></a> `Genfun.getContext()`
+
+The `context` returned by this function will have a `callNextMethod` method
+which can be used to invoke the correct next method even during asynchronous
+calls (for example, when used in a callback or a `Promise`).
+
+This function must be called synchronously within the body of the method before
+any asynchronous calls, and will error if invoked outside the context of a
+method call.
+
+##### Example
+
+```javascript
+someGenfun.add([MyThing], function (thing) {
+  const ctx = Genfun.getContext()
+  return somePromisedCall(thing).then(res => ctx.callNextMethod(res))
+})
 ```
 
 #### <a name="noApplicableMethod"></a> `Genfun.noApplicableMethod(<gf>, <this>, <args>)`

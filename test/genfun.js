@@ -84,6 +84,37 @@ describe('genfun', function () {
       })
       it('calls noApplicableMethod if there are no methods defined')
     })
+    describe('getContext', function () {
+      it('allows async calls to callNextMethod', function (done) {
+        var frob = genfun()
+        var obj = Object.create({})
+        var objChild = Object.create(obj)
+        frob.add([Object], function (x, cb) {
+          cb('default')
+        })
+        frob.add([obj], function (x, cb) {
+          var ctx = genfun.getContext()
+          setTimeout(function () {
+            ctx.callNextMethod()
+          }, 0)
+        })
+        frob.add([objChild], function (x, cb) {
+          var ctx = genfun.getContext()
+          setTimeout(function () {
+            ctx.callNextMethod(x, cb)
+          }, 0)
+        })
+        var calls = 0
+        var cb = function (res) {
+          assert.equal('default', res)
+          if (++calls >= 2) {
+            done()
+          }
+        }
+        frob(obj, cb)
+        frob(objChild, cb)
+      })
+    })
     describe('callNextMethod', function () {
       it('allows the next applicable method to be called', function () {
         var frob = genfun()
