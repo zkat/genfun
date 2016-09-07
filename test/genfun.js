@@ -9,14 +9,14 @@ describe('genfun', function () {
     })
     it('calls noApplicableMethod if called without adding methods', function () {
       var frob = genfun()
-      assert.throws(frob, function (err) {
-        return err.message === 'No applicable method found when called ' +
-          'with arguments of types: ()'
-      })
+      assert.throws(
+        function () { frob() },
+        /No applicable method found/,
+        'noApplicableMethod message when called without methods')
       genfun.noApplicableMethod.add([frob], function () {
         return 'success'
       })
-      assert.equal('success', frob())
+      assert.equal(frob(), 'success')
     })
   })
 
@@ -154,17 +154,6 @@ describe('genfun', function () {
         assert.throws(function () { genfun.callNextMethod() })
         assert.equal('ok', frob(obj))
       })
-      it('does not call noApplicableMethod when done', function () {
-        var frob = genfun()
-        var obj = Object.create({})
-        frob.add([], function () {
-          return 'noApplicableMethod'
-        })
-        frob.add([obj], function () {
-          return genfun.callNextMethod()
-        })
-        assert.throws(function () { frob(obj) })
-      })
       it('calls the next method using the original arguments', function () {
         var frob = genfun()
         var obj = {}
@@ -185,7 +174,7 @@ describe('genfun', function () {
         var frob = genfun()
         var obj = {name: 'whoosh'}
         frob.add([Object], function (arg) {
-          return arg+' called next.'
+          return arg + ' called next.'
         })
         frob.add([obj], function (x) {
           return 'And so then, ' + genfun.callNextMethod(obj.name)

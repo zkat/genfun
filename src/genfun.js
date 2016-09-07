@@ -53,22 +53,20 @@ function addMethod (selector, func) {
     genfun.genfun
     ? genfun.genfun
     : genfun
-  if (selector.length) {
-    selector = [].slice.call(selector)
-    for (var i = 0; i < selector.length; i++) {
-      if (!selector.hasOwnProperty(i)) {
-        selector[i] = Object.prototype
-      }
+  selector = [].slice.call(selector)
+  for (var i = 0; i < selector.length; i++) {
+    if (!selector.hasOwnProperty(i)) {
+      selector[i] = Object.prototype
     }
-    let method = new Method(genfun, selector, func)
-    genfun.methods.push(method)
-    genfun.cache = {key: [], methods: [], state: STATES.UNINITIALIZED}
-    return genfun
-  } else {
-    return Genfun.noApplicableMethod.add(
-      [genfun._wrapperFunction],
-      (_gf, newthis, args) => func.apply(newthis, args))
   }
+  genfun.cache = {key: [], methods: [], state: STATES.UNINITIALIZED}
+  let method = new Method(genfun, selector, func)
+  if (selector.length) {
+    genfun.methods.push(method)
+  } else {
+    genfun.defaultMethod = method
+  }
+  return genfun
 }
 
 /**
@@ -297,6 +295,9 @@ function computeApplicableMethods (genfun, args) {
             Method.isFullySpecified(method))
   })
   applicableMethods.sort((a, b) => Method.score(a) - Method.score(b))
+  if (genfun.defaultMethod) {
+    applicableMethods.push(genfun.defaultMethod)
+  }
   return applicableMethods
 }
 
