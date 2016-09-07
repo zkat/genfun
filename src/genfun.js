@@ -22,6 +22,10 @@ export default function Genfun () {
   fun.genfun = genfun
   fun.add = addMethod
   fun.rm = removeMethod
+  fun.callNextMethod = Genfun.callNextMethod
+  fun.getContext = Genfun.getContext
+  fun.noNextMethod = Genfun.noNextMethod
+  fun.hasNextMethod = Genfun.hasNextMethod
   genfun._wrapperFunction = fun
   return fun
 }
