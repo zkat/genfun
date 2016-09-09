@@ -178,6 +178,9 @@ function applyGenfun (genfun, newthis, args) {
 }
 
 function getApplicableMethods (genfun, args) {
+  if (!args.length || !genfun.methods.length) {
+    return genfun.defaultMethod ? [genfun.defaultMethod] : []
+  }
   let applicableMethods
   let maybeMethods = cachedMethods(genfun, args)
   if (maybeMethods) {
