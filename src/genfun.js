@@ -66,7 +66,7 @@ function addMethod (selector, func) {
   } else {
     genfun.defaultMethod = method
   }
-  return genfun
+  return genfun._wrapperFunction
 }
 
 /**
