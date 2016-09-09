@@ -107,6 +107,7 @@ Genfun.noApplicableMethod.add([], (gf, thisArg, args) => {
 })
 
 let _currentApplicableMethods
+let _currentMethodIdx
 let _currentThis
 let _currentArgs
 Genfun.hasNextMethod = () => {
@@ -128,13 +129,14 @@ Genfun.getContext = () => {
 class Context {
   constructor () {
     this.applicableMethods = _currentApplicableMethods
+    this.methodIdx = _currentMethodIdx
     this.this = _currentThis
     this.args = _currentArgs
   }
 
   hasNextMethod () {
     if (this.applicableMethods) {
-      return !!this.applicableMethods.length
+      return this.applicableMethods.length > this.methodIdx
     } else {
       throw new Error('hasNextMethod and callNextMethod must ' +
       'be called inside a Genfun method.')
@@ -145,8 +147,9 @@ class Context {
     if (this.hasNextMethod()) {
       _currentArgs = args.length ? args : this.args
       _currentThis = this.this
-      _currentApplicableMethods = [].slice.call(this.applicableMethods, 1)
-      return _currentApplicableMethods[0].func.apply(
+      _currentApplicableMethods = this.applicableMethods
+      _currentMethodIdx = ++this.methodIdx
+      return _currentApplicableMethods[_currentMethodIdx].func.apply(
         _currentThis, _currentArgs)
     } else {
       return Genfun.noNextMethod()
@@ -159,18 +162,21 @@ class Context {
  */
 function applyGenfun (genfun, newthis, args) {
   let applicableMethods = getApplicableMethods(genfun, args)
-  let ret, tmpCurrentMethods, tmpThis, tmpArgs
+  let ret, tmpCurrentMethods, tmpThis, tmpArgs, tmpIdx
   if (applicableMethods.length) {
     tmpCurrentMethods = _currentApplicableMethods
+    tmpIdx = _currentMethodIdx
     tmpThis = _currentThis
     tmpArgs = _currentArgs
     _currentApplicableMethods = applicableMethods
     _currentThis = newthis
     _currentArgs = args
+    _currentMethodIdx = 0
     ret = applicableMethods[0].func.apply(newthis, args)
     _currentApplicableMethods = tmpCurrentMethods
     _currentThis = tmpThis
     _currentArgs = tmpArgs
+    _currentMethodIdx = tmpIdx
     return ret
   } else {
     return Genfun.noApplicableMethod(genfun._wrapperFunction, newthis, args)
