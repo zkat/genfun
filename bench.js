@@ -1,4 +1,4 @@
-var genfun = require('./').default
+var genfun = require('./')
 
 /*
 * Test setup
@@ -24,7 +24,19 @@ TestObj.prototype.test_method = function () {
 bench('Native method', function () {
   testObj.test_method()
 })
-
+bench('Applied native method', function () {
+  TestObj.prototype.test_method.apply(testObj, [])
+})
+testObj.methodGf = genfun().add([], TestObj.prototype.test_method)
+bench('Native-method-style genfun', function () {
+  testObj.methodGf()
+})
+gf.add([], function (testObj) {
+  return testObj.toString() + 'test'
+})
+bench('Default-dispatched genfun', function () {
+  gf(testObj)
+})
 gf.add([TestObj], function (testObj) {
   return testObj.toString() + 'test'
 })
