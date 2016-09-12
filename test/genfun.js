@@ -259,9 +259,30 @@ describe('genfun', function () {
         })
       })
       describe('ToObject dispatch conversion', function () {
-        it('dispatches primitives according to their ToObject\'s prototypes')
-        it('passes the original primitive into the effective method function')
-        it('works on booleans, numbers, and strings')
+        it('dispatches primitives based on equality', function () {
+          var frob = genfun()
+          frob.add([true], function () { return 'bool' })
+          frob.add([1], function () { return 'number' })
+          frob.add(['hej'], function () { return 'str' })
+          assert.equal(frob(true), 'bool', 'yay bool')
+          assert.equal(frob(1), 'number', 'yay number')
+          assert.equal(frob('hej'), 'str', 'yay str')
+          assert.throws(function () {
+            frob(false)
+          }, /no applicable method/i)
+          assert.throws(function () {
+            frob(2)
+          }, /no applicable method/i)
+          assert.throws(function () {
+            frob('bai')
+          }, /no applicable method/i)
+        })
+        it('passes original primitive into the method function', function () {
+          var frob = genfun()
+          frob.add(['foo'], function (str) { return str })
+          assert.equal(frob('foo'), 'foo', 'got the same thing back')
+          assert.equal(typeof frob('foo'), 'string', 'it is a string')
+        })
       })
       describe('Object.prototype empty-index shorthand', function () {
         var frob = genfun()
