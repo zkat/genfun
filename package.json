@@ -37,9 +37,12 @@
   },
   "readmeFilename": "README.md",
   "scripts": {
+    "preversion": "npm t",
+    "postversion": "npm publish && git push --follow-tags",
     "build": "babel --presets es2015 --plugins add-module-exports src --out-dir lib",
     "prepublish": "npm run build",
-    "test": "standard src/*.js && npm run build && nyc -- mocha --reporter spec"
+    "pretest": "standard src/*.js",
+    "test": "npm run build && nyc -- mocha --reporter spec"
   },
   "dependencies": {}
 }
