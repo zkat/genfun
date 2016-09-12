@@ -32,6 +32,7 @@ export default function Method (genfun, selector, func) {
     object = Object.hasOwnProperty.call(tmpSelector, i)
     ? tmpSelector[i]
     : Object.prototype
+    object = util.dispatchableObject(object)
     if (typeof object === 'function' && !object.genfun) {
       object = object.prototype
     }

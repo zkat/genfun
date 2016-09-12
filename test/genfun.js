@@ -241,6 +241,22 @@ describe('genfun', function () {
           })
           assert.equal('nullProto', frob(nullProto))
         })
+        it('handles `null` definitions and dispatch', function () {
+          var frob = genfun()
+          frob.add([null], function () { return 'ok' })
+          assert.equal(frob(null), 'ok', 'dispatched on null')
+          assert.throws(function () {
+            frob(undefined)
+          }, /no applicable method/i)
+        })
+        it('handles `undefined` definitions and dispatch', function () {
+          var frob = genfun()
+          frob.add([undefined], function () { return 'ok' })
+          assert.equal(frob(undefined), 'ok', 'dispatched on undefined')
+          assert.throws(function () {
+            frob(null)
+          }, /no applicable method/i)
+        })
       })
       describe('ToObject dispatch conversion', function () {
         it('dispatches primitives according to their ToObject\'s prototypes')

@@ -222,7 +222,7 @@ function cacheArgs (genfun, args, methods) {
 }
 
 function cacheableProto (genfun, arg) {
-  var dispatchable = dispatchableObject(arg)
+  var dispatchable = util.dispatchableObject(arg)
   if (Object.hasOwnProperty.call(dispatchable, Role.roleKeyName)) {
     for (var j = 0; j < dispatchable[Role.roleKeyName].length; j++) {
       var role = dispatchable[Role.roleKeyName][j]
@@ -294,7 +294,7 @@ function computeApplicableMethods (genfun, args) {
     }
   }
   args.forEach((arg, index) => {
-    getPrecedenceList(dispatchableObject(arg))
+    getPrecedenceList(util.dispatchableObject(arg))
       .forEach((obj, hierarchyPosition) => {
         findAndRankRoles(obj, hierarchyPosition, index)
       })
@@ -323,23 +323,4 @@ function getPrecedenceList (obj) {
     nextObj = Object.getPrototypeOf(nextObj)
   }
   return precedenceList
-}
-
-/*
- * Returns a useful dispatch object for value using a process similar to
- * the ToObject operation specified in http://es5.github.com/#x9.9
- */
-function dispatchableObject (value) {
-  // To shut up jshint, which doesn't let me turn off this warning.
-  const Bool = Boolean
-  const Num = Number
-  const Str = String
-  const Obj = Object
-  switch (typeof value) {
-    case 'object': return value
-    case 'boolean': return new Bool(value)
-    case 'number': return new Num(value)
-    case 'string': return new Str(value)
-    default: return new Obj(value)
-  }
 }
