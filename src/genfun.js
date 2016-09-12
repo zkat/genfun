@@ -13,7 +13,7 @@ import * as util from './util'
  * @returns {function} New generic function.
  */
 export default function Genfun () {
-  let genfun = this || {}
+  let genfun = this || Object.create(Genfun.prototype)
   genfun.methods = []
   genfun.cache = {key: [], methods: [], state: Genfun.UNINITIALIZED}
   var fun = function () {
