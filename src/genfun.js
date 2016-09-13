@@ -22,6 +22,7 @@ export default function Genfun () {
   fun.genfun = genfun
   fun.add = addMethod
   fun.rm = removeMethod
+  fun.hasMethod = hasMethod
   fun.callNextMethod = Genfun.callNextMethod
   fun.getContext = Genfun.getContext
   fun.noNextMethod = Genfun.noNextMethod
@@ -80,6 +81,21 @@ function addMethod (selector, func) {
  */
 function removeMethod () {
   throw new Error('not yet implemented')
+}
+
+/**
+ * Returns true if there are methods that apply to the given arguments on
+ * `genfun`. Additionally, makes sure the cache is warmed up for the given
+ * arguments.
+ *
+ */
+function hasMethod (...args) {
+  const genfun = typeof this === 'function' &&
+    this.genfun
+    ? this.genfun
+    : this
+  const methods = getApplicableMethods(genfun, args || [])
+  return !!(methods && methods.length)
 }
 
 /**

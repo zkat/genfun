@@ -414,6 +414,19 @@ describe('genfun', function () {
     it('errors if any of the arguments given are primitives')
   })
 
+  describe('Genfun#hasMethod', function () {
+    it('returns true if there are applicable methods', function () {
+      var parent = {}
+      var child = Object.create(parent)
+      var frob = genfun().add([parent], function () {
+        throw new Error('should not be called')
+      })
+      assert.ok(frob.hasMethod(parent))
+      assert.ok(frob.hasMethod(child))
+      assert.ok(frob.hasMethod(child, 'huh'))
+      assert.ok(!frob.hasMethod({}))
+    })
+  })
   describe('removeMethod', function () {
     it('undefines a previously defined method on the genfun')
     it('can remove methods that dispatch on objects with null [[Proto]]')
