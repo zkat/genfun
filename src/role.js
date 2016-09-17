@@ -11,4 +11,6 @@ export default function Role (method, position) {
   this.position = position
 }
 
-Role.roleKeyName = Symbol('roles')
+Role.roleKeyName = typeof Symbol === 'undefined'
+  ? '___genfun_roles_array___'
+  : Symbol('roles')

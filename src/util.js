@@ -3,7 +3,9 @@
  * Object.prototype !== the one inside this closure, so we tag it
  * here and use that for comparisons.
  */
-const prototestKeyName = Symbol('isObjectProto')
+const prototestKeyName = typeof Symbol === 'undefined'
+  ? '___genfun_isObjectProto_key___'
+  : Symbol('isObjectProto')
 const hasDefineProperty = !!Object.defineProperty
 
 if (hasDefineProperty) {
