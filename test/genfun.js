@@ -85,38 +85,7 @@ describe('genfun', function () {
       })
       it('calls noApplicableMethod if there are no methods defined')
     })
-    describe('getContext', function () {
-      it('allows async calls to callNextMethod', function (done) {
-        var frob = genfun()
-        var obj = Object.create({})
-        var objChild = Object.create(obj)
-        frob.add([Object], function (x, cb) {
-          cb('default')
-        })
-        frob.add([obj], function (x, cb) {
-          var ctx = genfun.getContext()
-          setTimeout(function () {
-            ctx.callNextMethod()
-          }, 0)
-        })
-        frob.add([objChild], function (x, cb) {
-          var ctx = genfun.getContext()
-          setTimeout(function () {
-            ctx.callNextMethod(x, cb)
-          }, 0)
-        })
-        var calls = 0
-        var cb = function (res) {
-          assert.equal('default', res)
-          if (++calls >= 2) {
-            done()
-          }
-        }
-        frob(obj, cb)
-        frob(objChild, cb)
-      })
-    })
-    describe('callNextMethod', function () {
+    describe('nextMethod', function () {
       it('allows the next applicable method to be called', function () {
         var frob = genfun()
         var obj = Object.create({})
@@ -124,11 +93,11 @@ describe('genfun', function () {
         frob.add([Object], function () {
           return 'default'
         })
-        frob.add([obj], function () {
-          return genfun.callNextMethod()
+        frob.add([obj], function (o, nextMethod) {
+          return nextMethod()
         })
-        frob.add([objChild], function () {
-          return genfun.callNextMethod()
+        frob.add([objChild], function (o, nextMethod) {
+          return nextMethod()
         })
         assert.equal('default', frob(obj))
         assert.equal('default', frob(objChild))
@@ -136,24 +105,12 @@ describe('genfun', function () {
       it('can only be called when there is a next method available', function () {
         var frob = genfun()
         var obj = Object.create({})
-        frob.add([frob], function () {
-          return genfun.callNextMethod()
+        frob.add([frob], function (o, next) {
+          return next()
         })
         assert.throws(function () { frob(Object.create(obj)) })
         frob.add([Object], function () { return 'ok!' })
         assert.equal('ok!', frob(Object.create(obj)))
-      })
-      it('can only be called within the scope of a method', function () {
-        var frob = genfun()
-        var obj = Object.create({})
-        frob.add([Object], function () {
-          return 'ok'
-        })
-        frob.add([obj], function () {
-          return genfun.callNextMethod()
-        })
-        assert.throws(function () { genfun.callNextMethod() })
-        assert.equal('ok', frob(obj))
       })
       it('calls the next method using the original arguments', function () {
         var frob = genfun()
@@ -164,8 +121,8 @@ describe('genfun', function () {
             thisval: this
           }
         })
-        frob.add([obj], function () {
-          return genfun.callNextMethod()
+        frob.add([obj], function (o, nextMethod) {
+          return nextMethod()
         })
         var ret = frob.call('test', obj)
         assert.equal(obj, ret.args[0])
@@ -177,8 +134,8 @@ describe('genfun', function () {
         frob.add([Object], function (arg) {
           return arg + ' called next.'
         })
-        frob.add([obj], function (x) {
-          return 'And so then, ' + genfun.callNextMethod(obj.name)
+        frob.add([obj], function (x, nextMethod) {
+          return 'And so then, ' + nextMethod(obj.name)
         })
         assert.equal('And so then, whoosh called next.', frob(obj))
       })
