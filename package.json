@@ -28,21 +28,19 @@
     "lib/*.js"
   ],
   "devDependencies": {
-    "babel-cli": "^6.1.4",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-preset-es2015": "^6.1.4",
     "mocha": "^3.0.2",
     "nyc": "^8.1.0",
     "standard": "^8.0.0"
   },
   "readmeFilename": "README.md",
   "scripts": {
-    "preversion": "npm t",
-    "postversion": "npm publish && git push --follow-tags",
-    "build": "babel --presets es2015 --plugins add-module-exports src --out-dir lib",
-    "prepublish": "npm run build",
-    "pretest": "standard src/*.js",
-    "test": "npm run build && nyc -- mocha --reporter spec"
+    "prerelease": "npm t",
+    "postrelease": "npm publish && git push --follow-tags",
+    "pretest": "standard lib",
+    "release": "standard-version -s",
+    "test": "nyc -- mocha --reporter spec",
+    "update-coc": "weallbehave -o . && git add CODE_OF_CONDUCT.md && git commit -m 'docs(coc): updated CODE_OF_CONDUCT.md'",
+    "update-contrib": "weallcontribute -o . && git add CONTRIBUTING.md && git commit -m 'docs(contributing): updated CONTRIBUTING.md'"
   },
   "dependencies": {}
 }
