@@ -28,9 +28,12 @@
     "lib/*.js"
   ],
   "devDependencies": {
-    "mocha": "^3.0.2",
-    "nyc": "^8.1.0",
-    "standard": "^8.0.0"
+    "mocha": "^3.2.0",
+    "nyc": "^10.2.0",
+    "standard": "^10.0.2",
+    "standard-version": "^4.0.0",
+    "weallbehave": "^1.0.3",
+    "weallcontribute": "^1.0.8"
   },
   "readmeFilename": "README.md",
   "scripts": {
