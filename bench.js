@@ -1,61 +1,65 @@
-var genfun = require('./')
+const genfun = require('./')
 
 /*
 * Test setup
 */
 function TestObj () {}
-var testObj = new TestObj()
-var gf = genfun()
+const testObj = new TestObj()
 
 /*
 * Tests
 */
 
-function test_function (testObj) {
+function testFunction (testObj) {
   return testObj.toString() + 'test'
 }
 bench('Regular function', function () {
-  test_function(testObj)
+  return testFunction(testObj)
 })
 
-TestObj.prototype.test_method = function () {
+TestObj.prototype.testMethod = function () {
   return this.toString() + 'test'
 }
 bench('Native method', function () {
-  testObj.test_method()
+  return testObj.testMethod()
 })
 bench('Applied native method', function () {
-  TestObj.prototype.test_method.apply(testObj, [])
+  return TestObj.prototype.testMethod.apply(testObj, [])
 })
-testObj.methodGf = genfun().add([], TestObj.prototype.test_method)
+
+testObj.methodGf = genfun(TestObj.prototype.testMethod)
 bench('Native-method-style genfun', function () {
-  testObj.methodGf()
+  return testObj.methodGf()
 })
-gf.add([], function (testObj) {
+const defaultGenfun = genfun(function (test) {
   return testObj.toString() + 'test'
 })
 bench('Default-dispatched genfun', function () {
-  gf(testObj)
+  return defaultGenfun(testObj)
 })
-gf.add([TestObj], function (testObj) {
+
+const singleGenfun = genfun()
+singleGenfun.add([TestObj], function (testObj) {
   return testObj.toString() + 'test'
 })
 bench('Singly-dispatched genfun', function () {
-  gf(testObj)
+  return singleGenfun(testObj)
 })
 
-gf.add([TestObj, TestObj], function (testObj1, testObj2) {
+const doubleGenfun = genfun()
+doubleGenfun.add([TestObj, TestObj], function (testObj1, testObj2) {
   return testObj.toString() + 'test'
 })
 bench('Double-dispatched genfun', function () {
-  gf(testObj, testObj)
+  return doubleGenfun(testObj, testObj)
 })
 
-gf.add([TestObj, String], function (testObj1, string) {
+const doubleString = genfun()
+doubleString.add([TestObj, String], function (testObj1, string) {
   return testObj.toString() + string
 })
 bench('Double-dispatched genfun with string primitive', function () {
-  gf(testObj, 'test')
+  return doubleString(testObj, 'test')
 })
 
 /*
@@ -64,8 +68,13 @@ bench('Double-dispatched genfun with string primitive', function () {
 function bench (name, func, iterations) {
   iterations = iterations || 100000
   console.time(name)
-  for (var i = 0; i < iterations; i++) {
-    func()
+  let val
+  for (let i = 0; i < iterations; i++) {
+    val = func() + 'a'
   }
   console.timeEnd(name)
+  // This whole dance is solely for the sake of defeating smartass compilers
+  if (val !== '[object Object]testa') {
+    throw new Error('got a bad value:', val)
+  }
 }
