@@ -23,7 +23,7 @@
   },
   "main": "lib/genfun.js",
   "version": "4.0.1",
-  "license": "CC0-1.0",
+  "license": "MIT",
   "files": [
     "lib/*.js"
   ],
